@@ -1,7 +1,7 @@
 // Service worker : le grimoire reste lisible hors ligne.
 // - Fichiers de l'application : réseau d'abord (les mises à jour arrivent tout de suite), cache en secours.
 // - Images des pages : cache d'abord (leur nom change quand leur contenu change).
-const CACHE = 'grimoire-v1';
+const CACHE = 'grimoire-v2';
 const SHELL = [
   './',
   'index.html',
@@ -13,7 +13,7 @@ const SHELL = [
   'fonts/cinzel-decorative-1.woff2',
   'fonts/cormorant-garamond-2.woff2',
   'fonts/cormorant-garamond-3.woff2',
-  'fonts/unifrakturmaguntia-5.woff2',
+  'fonts/princess-sofia.woff2',
   'lib/page-flip.browser.js',
   'js/main.js',
   'js/reader.js',

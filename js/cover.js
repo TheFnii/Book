@@ -174,8 +174,8 @@ export function coverSVG({ line1 = '', line2 = '' } = {}) {
     ${moonPhases(1150)}
 
     <g class="cover-title" fill="url(#goldText)" stroke="#2b1609" stroke-width="1.2" paint-order="stroke" text-anchor="middle">
-      <text x="${cx}" y="${cy - 42}" font-size="66" data-max="420" style="font-family:'UnifrakturMaguntia',serif">${esc(line1)}</text>
-      <text x="${cx}" y="${cy + 150}" font-size="168" data-max="430" style="font-family:'UnifrakturMaguntia',serif">${esc(line2)}</text>
+      <text x="${cx}" y="${cy - 42}" font-size="66" data-max="420" style="font-family:'Princess Sofia',cursive">${esc(line1)}</text>
+      <text x="${cx}" y="${cy + 150}" font-size="175" data-max="430" style="font-family:'Princess Sofia',cursive">${esc(line2)}</text>
     </g>
   </g>
 </svg>`;

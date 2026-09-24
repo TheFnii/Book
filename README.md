@@ -85,4 +85,4 @@ Site statique, sans étape de compilation : HTML, CSS et JavaScript (modules ES)
 
 Pour tester en local : `python3 -m http.server`, puis ouvrez `http://localhost:8000/`.
 
-**Crédits** : tournage des pages par [StPageFlip](https://github.com/Nodlik/StPageFlip) (licence MIT, `lib/page-flip.LICENSE`). Polices Cinzel, Cinzel Decorative, Cormorant Garamond et UnifrakturMaguntia (SIL Open Font License, via Google Fonts). Textures du bureau, du cuir et du parchemin générées pour ce projet.
+**Crédits** : tournage des pages par [StPageFlip](https://github.com/Nodlik/StPageFlip) (licence MIT, `lib/page-flip.LICENSE`). Polices Cinzel, Cinzel Decorative, Cormorant Garamond et Princess Sofia (SIL Open Font License, via Google Fonts). Textures du bureau, du cuir et du parchemin générées pour ce projet.
