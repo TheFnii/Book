@@ -1,15 +1,16 @@
 // Phases de la Lune (algorithme de Jean Meeus, « Astronomical Algorithms », chap. 49).
-// Précision : quelques minutes. Affichage à l'heure de Paris.
+// Précision : quelques minutes. Les instants sont universels ; l'affichage se fait
+// dans le fuseau horaire choisi.
 
 const RAD = Math.PI / 180;
 const SYNODIC = 29.530588861;
-export const TZ = 'Europe/Paris';
+const DAY = 86400000;
 
 // 0 = nouvelle lune, 1 = premier quartier, 2 = pleine lune, 3 = dernier quartier
 function phaseJDE(k, type) {
   k += type / 4;
   const T = k / 1236.85;
-  let jde = 2451550.09766 + SYNODIC * k + 0.00015437 * T * T - 0.00000015 * T ** 3 + 0.00000000073 * T ** 4;
+  const jde = 2451550.09766 + SYNODIC * k + 0.00015437 * T * T - 0.00000015 * T ** 3 + 0.00000000073 * T ** 4;
   const E = 1 - 0.002516 * T - 0.0000074 * T * T;
   const M = (2.5534 + 29.1053567 * k - 0.0000014 * T * T - 0.00000011 * T ** 3) * RAD;
   const Mp = (201.5643 + 385.81693528 * k + 0.0107582 * T * T + 0.00001238 * T ** 3 - 0.000000058 * T ** 4) * RAD;
@@ -51,10 +52,10 @@ function phaseJDE(k, type) {
 // Temps dynamique → temps universel (ΔT ≈ 69 s autour de 2025) → Date JavaScript.
 function jdeToDate(jde, year) {
   const dT = 69 + 0.3 * (year - 2025);
-  return new Date((jde - 2440587.5) * 86400000 - dT * 1000);
+  return new Date((jde - 2440587.5) * DAY - dT * 1000);
 }
 
-// Toutes les phases principales entre deux dates.
+// Toutes les phases principales entre deux instants.
 export function phasesBetween(from, to) {
   const out = [];
   const y0 = from.getUTCFullYear() + from.getUTCMonth() / 12;
@@ -69,46 +70,84 @@ export function phasesBetween(from, to) {
   }
 }
 
-const DAY = 86400000;
-
-// État de la Lune à une date : angle de phase, éclairement, âge, phase précédente et suivante.
+// État de la Lune à un instant : angle de phase (0 nouvelle, 90 premier quartier,
+// 180 pleine, 270 dernier), éclairement, âge, phases précédente et suivante.
 export function moonState(date) {
   const ev = phasesBetween(new Date(date - 40 * DAY), new Date(+date + 40 * DAY));
-  let i = ev.findIndex((e) => e.date > date);
+  const i = ev.findIndex((e) => e.date > date);
   const next = ev[i];
   const prev = ev[i - 1];
   const f = (date - prev.date) / (next.date - prev.date);
-  const theta = (prev.type + f) * 90; // 0 nouvelle, 90 premier quartier, 180 pleine, 270 dernier
+  const theta = (prev.type + f) * 90;
   const illum = (1 - Math.cos(theta * RAD)) / 2;
   let lastNew = prev;
   for (let j = i - 1; j >= 0; j--) if (ev[j].type === 0) { lastNew = ev[j]; break; }
   return { theta, illum, age: (date - lastNew.date) / DAY, prev, next };
 }
 
-// Clé de jour à l'heure de Paris (« 2026-09-24 »).
-const keyFmt = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
-export const dayKey = (d) => keyFmt.format(d);
-
-// Midi à Paris pour une date du calendrier (sert de référence pour l'état du jour).
-export function parisNoon(y, m, d) {
-  const guess = new Date(Date.UTC(y, m, d, 12));
-  const h = Number(new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', hour12: false }).format(guess));
-  return new Date(+guess - (h - 12) * 3600000);
+/* ---------- Fuseaux horaires ---------- */
+const partFmt = new Map();
+function parts(date, tz) {
+  let f = partFmt.get(tz);
+  if (!f) {
+    f = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
+    });
+    partFmt.set(tz, f);
+  }
+  const o = {};
+  for (const p of f.formatToParts(date)) o[p.type] = Number(p.value);
+  return o;
 }
 
-// Nom de la phase d'un jour (8 phases), en tenant compte des phases principales tombant ce jour-là.
+// Décalage du fuseau par rapport à UTC, en minutes, à un instant donné.
+export function tzOffset(date, tz) {
+  const p = parts(date, tz);
+  const asUTC = Date.UTC(p.year, p.month - 1, p.day, p.hour % 24, p.minute, p.second);
+  return Math.round((asUTC - Math.floor(+date / 1000) * 1000) / 60000);
+}
+
+// Date du calendrier [année, mois (1-12), jour] d'un instant, dans un fuseau.
+export function ymdIn(date, tz) {
+  const p = parts(date, tz);
+  return [p.year, p.month, p.day];
+}
+
+// Midi, heure locale du fuseau, pour une date du calendrier.
+export function localNoon(y, m, d, tz) {
+  const guess = Date.UTC(y, m - 1, d, 12);
+  const off = tzOffset(new Date(guess), tz);
+  return new Date(guess - off * 60000);
+}
+
 export const MAJOR = ['Nouvelle lune', 'Premier quartier', 'Pleine lune', 'Dernier quartier'];
 const MINOR = ['Premier croissant', 'Lune gibbeuse croissante', 'Lune gibbeuse décroissante', 'Dernier croissant'];
-export function dayPhase(y, m, d) {
-  const noon = parisNoon(y, m, d);
+const same = (a, b) => a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
+
+// Lune d'un jour (8 phases), en tenant compte des phases principales tombant ce jour-là.
+export function dayPhase(y, m, d, tz) {
+  const noon = localNoon(y, m, d, tz);
   const st = moonState(noon);
-  const key = dayKey(noon);
-  const major = [st.prev, st.next].find((e) => dayKey(e.date) === key);
+  const major = [st.prev, st.next].find((e) => same(ymdIn(e.date, tz), [y, m, d]));
   return {
     ...st,
     date: noon,
     major: major ? major.type : null,
+    event: major || null,
     name: major ? MAJOR[major.type] : MINOR[st.prev.type],
     period: major ? major.type : st.prev.type, // phase dont on vit l'énergie
   };
+}
+
+// Lunaisons d'une année : celles qui ont au moins une phase principale dans l'année.
+export function lunations(year, tz) {
+  const ev = phasesBetween(new Date(Date.UTC(year - 1, 10, 1)), new Date(Date.UTC(year + 1, 1, 15)));
+  const out = [];
+  for (let i = 0; i < ev.length; i++) {
+    if (ev[i].type !== 0) continue;
+    const group = ev.slice(i, i + 4);
+    if (group.length < 4) break;
+    if (group.some((e) => ymdIn(e.date, tz)[0] === year)) out.push(group);
+  }
+  return out;
 }

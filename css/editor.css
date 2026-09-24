@@ -199,6 +199,12 @@ a { color: var(--gold-light); }
 .check { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 16px; cursor: pointer; }
 .check input { width: 20px; height: 20px; accent-color: #c9973f; }
 .oracle-box h2 { color: #cdb3f5; }
+.lunar-box h2 { color: #b9c6ff; }
+.lunar-phase { margin-top: 10px; border-radius: 10px; border: 1px solid var(--line); background: rgba(0, 0, 0, .18); }
+.lunar-phase summary { padding: 10px 12px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: .06em; color: var(--gold-light); }
+.lunar-phase summary i { font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--muted); letter-spacing: 0; margin-left: 6px; }
+.lunar-phase .inner { padding: 0 12px 4px; }
+.lunar-phase .field textarea { min-height: 110px; }
 
 /* ---------- Pages ---------- */
 .pages-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }

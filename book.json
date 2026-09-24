@@ -45,6 +45,51 @@
       "Le temps apportera la réponse"
     ]
   },
+  "lunar": {
+    "enabled": true,
+    "phases": [
+      {
+        "title": "Nouvelle lune",
+        "motto": "Je sème",
+        "tips": [
+          "Poser ses intentions",
+          "Commencer un projet",
+          "Écrire ses objectifs",
+          "Planifier ses actions"
+        ]
+      },
+      {
+        "title": "Premier quartier",
+        "motto": "J’agis",
+        "tips": [
+          "Passer à l’action",
+          "Prendre une décision",
+          "Lever les blocages",
+          "Oser sortir de sa zone de confort"
+        ]
+      },
+      {
+        "title": "Pleine lune",
+        "motto": "Je récolte",
+        "tips": [
+          "Faire le bilan",
+          "Prendre conscience",
+          "Recevoir des réponses",
+          "Célébrer les réussites"
+        ]
+      },
+      {
+        "title": "Dernier quartier",
+        "motto": "Je libère",
+        "tips": [
+          "Lâcher prise",
+          "Trier et ranger",
+          "Pardonner",
+          "Clore ce qui n’a plus sa place"
+        ]
+      }
+    ]
+  },
   "pageRatio": 0.707,
   "pages": [
     {

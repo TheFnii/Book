@@ -102,7 +102,48 @@ function render() {
   renderCover();
   renderBackground();
   renderOracle();
+  renderLunar();
   renderPages();
+}
+
+const LUNAR_ICONS = ['🌑', '🌓', '🌕', '🌗'];
+function renderLunar() {
+  const l = state.book.lunar;
+  $('#lunar-on').checked = l.enabled;
+  $('#lunar-fields').hidden = !l.enabled;
+  const wrap = $('#lunar-phases');
+  if (!wrap.children.length) {
+    wrap.innerHTML = l.phases.map((p, i) => `
+      <details class="lunar-phase" data-i="${i}">
+        <summary>${LUNAR_ICONS[i]} <span class="t"></span><i class="m"></i></summary>
+        <div class="inner">
+          <label class="field">Nom de la phase<input type="text" data-k="title" maxlength="40" autocomplete="off"></label>
+          <label class="field">Devise<input type="text" data-k="motto" maxlength="40" autocomplete="off"></label>
+          <label class="field">Conseils — un par ligne<textarea data-k="tips" rows="5"></textarea></label>
+        </div>
+      </details>`).join('');
+    let hist = false;
+    wrap.addEventListener('input', (e) => {
+      const el = e.target;
+      const i = Number(el.closest('.lunar-phase').dataset.i);
+      if (!hist) { pushHistory(); hist = true; }
+      const k = el.dataset.k;
+      state.book.lunar.phases[i][k] = k === 'tips' ? el.value.split('\n').map((t) => t.trim()).filter(Boolean) : el.value;
+      saveDraft();
+      renderStatus();
+      renderLunar();
+    });
+    wrap.addEventListener('focusout', () => { hist = false; });
+  }
+  wrap.querySelectorAll('.lunar-phase').forEach((d) => {
+    const p = l.phases[Number(d.dataset.i)];
+    d.querySelector('.t').textContent = p.title;
+    d.querySelector('.m').textContent = p.motto;
+    d.querySelectorAll('[data-k]').forEach((el) => {
+      if (document.activeElement === el) return;
+      el.value = el.dataset.k === 'tips' ? p.tips.join('\n') : p[el.dataset.k];
+    });
+  });
 }
 
 function renderOracle() {
@@ -711,6 +752,7 @@ function bindUI() {
   $('#bg-rm').onclick = () => mutate(() => { state.book.background = null; });
 
   $('#oracle-on').onchange = (e) => mutate(() => { state.book.oracle.enabled = e.target.checked; });
+  $('#lunar-on').onchange = (e) => mutate(() => { state.book.lunar.enabled = e.target.checked; });
   let oracleHist = false;
   [['oracle-title', 'title'], ['oracle-subtitle', 'subtitle'], ['oracle-answers', 'answers']].forEach(([id, key]) => {
     const input = $('#' + id);

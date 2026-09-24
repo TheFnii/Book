@@ -61,6 +61,19 @@ Comme le reste du livre, les changements sont visibles par tous après avoir cli
 
 ---
 
+## Le calendrier lunaire
+
+Un cadran lunaire est posé sur le bureau, à gauche du sous-main (en haut à gauche sur téléphone). Son aiguille et la petite lune au centre montrent la phase du jour. Un toucher ouvre le calendrier :
+- **Aujourd'hui** : la lune du jour, la phase en cours avec sa devise et ses conseils, l'éclairement, la prochaine phase et la frise de la lunaison ;
+- **Calendrier** : le mois, avec la lune de chaque jour et les 4 grandes phases en couleur ;
+- **Lunaisons** : le tableau de l'année.
+
+Les phases sont **calculées automatiquement** (méthode astronomique de Jean Meeus, précise à quelques minutes) pour toutes les années. Chaque visiteur peut choisir son **fuseau horaire** ; son propre fuseau est proposé par défaut, et les dates changent quand une phase tombe de l'autre côté de minuit.
+
+Dans l'atelier, l'encadré **Calendrier lunaire** permet d'afficher ou masquer le cadran, et de modifier le nom, la devise et les conseils de chaque phase.
+
+---
+
 ## Installer le livre sur un téléphone
 
 - **Android (Chrome)** : ouvrez le lien du livre → menu **⋮** → **Installer l'application** (ou *Ajouter à l'écran d'accueil*).
@@ -89,6 +102,7 @@ Site statique, sans étape de compilation : HTML, CSS et JavaScript (modules ES)
 | `js/cover.js` | Couverture dessinée en SVG |
 | `js/fx.js` | Particules dorées |
 | `js/oracle.js` | Boule de voyance |
+| `js/lunar.js`, `js/moon.js`, `js/moon-draw.js` | Calendrier lunaire : cadran, panneau, calcul des phases, dessin de la lune |
 | `js/sound.js` | Sons générés en direct (Web Audio, sans fichier audio) |
 | `editeur.html`, `js/editor.js` | Atelier |
 | `js/github.js` | Publication : un seul commit par publication, via l'API Git de GitHub |

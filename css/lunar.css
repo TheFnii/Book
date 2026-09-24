@@ -1,0 +1,318 @@
+/* ---------- Calendrier lunaire ---------- */
+
+/* Cadran posé sur le bureau */
+.lunar-desk {
+  position: absolute;
+  z-index: 5;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  animation: oracleIn 1.4s ease .5s both;
+  transition: transform .9s cubic-bezier(.6, .02, .25, 1), opacity .5s ease .45s;
+}
+.lunar-desk .ld-svg { position: relative; display: block; width: 100%; height: 100%; }
+.lunar-desk .ld-moon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+.ld-glow {
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 215, 140, .35), rgba(255, 190, 90, .1) 60%, transparent);
+  animation: ldglow 5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes ldglow {
+  0%, 100% { opacity: .5; transform: scale(.96); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+.ld-needle { transition: transform 1s ease; }
+.lunar-desk:hover .ld-glow { animation-duration: 2.2s; }
+.lunar-desk:focus-visible { box-shadow: 0 0 0 3px rgba(246, 227, 168, .8); }
+.reader.is-opening .lunar-desk, .reader.panel-open .lunar-desk { pointer-events: none; }
+.reader.oracle-open .lunar-desk { opacity: 0; pointer-events: none; transition: opacity .35s; }
+.reader.lunar-open .oracle-desk { opacity: 0; pointer-events: none; transition: opacity .35s; }
+.reader.lunar-open .lunar-desk {
+  transform: var(--ld-zoom);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .9s cubic-bezier(.6, .02, .25, 1), opacity .6s ease .2s;
+}
+
+/* Mise au point : le bureau s'efface */
+.reader.lunar-open .stage, .reader.lunar-open .scene {
+  transform-origin: var(--lox) var(--loy);
+  transform: scale(1.06);
+  filter: blur(5px) brightness(.32) saturate(.8);
+}
+.reader.lunar-open .toolbar, .reader.lunar-open .hint { opacity: 0 !important; pointer-events: none !important; }
+.lunar-aura {
+  position: absolute;
+  inset: 0;
+  z-index: 14;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 40%, rgba(70, 60, 160, .35), transparent 70%),
+    linear-gradient(rgba(10, 8, 35, .45), rgba(10, 8, 35, .75));
+}
+.reader.lunar-open .lunar-aura { opacity: 1; }
+
+/* Panneau */
+.lunar-ui {
+  --new: #e6e2f2;
+  --first: #9fb4ff;
+  --full: #f2b75a;
+  --last: #c79bff;
+  --muted: #a99bd0;
+  --gold: #e8c77a;
+  position: absolute;
+  inset: 0;
+  z-index: 17;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  color: #efe8ff;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(.94);
+  transform-origin: var(--lox) var(--loy);
+  transition: opacity .5s, transform .6s ease, visibility 0s .6s;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.reader.lunar-open .lunar-ui { opacity: 1; visibility: visible; transform: none; transition: opacity .7s .35s, transform .8s .3s ease, visibility 0s; }
+.lunar-ui [hidden] { display: none !important; }
+.lunar-ui button { font-family: inherit; }
+
+.lu-back {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  left: 12px;
+  z-index: 2;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(205, 175, 255, .35);
+  background: rgba(20, 12, 40, .75);
+  color: #e9dcff;
+  font: 500 16px 'Cormorant Garamond', Georgia, serif;
+  cursor: pointer;
+}
+.lu-back:hover { background: rgba(50, 28, 80, .85); }
+.lu-wrap { max-width: 1100px; margin: 0 auto; padding: 58px 18px 36px; }
+
+.lu-head { text-align: center; }
+.lu-head h2 {
+  margin: 0;
+  font: 600 clamp(22px, 3.4vw, 32px) 'Cinzel', serif;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: #f4ebff;
+  text-shadow: 0 0 18px rgba(170, 150, 255, .45);
+}
+.lu-tz {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  font: 400 12px 'Cinzel', serif;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.lu-tz select {
+  max-width: min(74vw, 340px);
+  padding: 6px 30px 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(205, 175, 255, .35);
+  background: rgba(20, 14, 50, .8) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23c9b8f0' stroke-width='1.6'/%3E%3C/svg%3E") right 12px center no-repeat;
+  color: #f1e8ff;
+  font: 500 15px 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: 0;
+  text-transform: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.lu-tz select option, .lu-tz select optgroup { background: #1a1440; color: #f1e8ff; }
+.lu-divider {
+  display: block;
+  width: 70px;
+  height: 9px;
+  margin: 12px auto 0;
+  background:
+    linear-gradient(90deg, transparent, rgba(232, 199, 122, .8)) left center / 28px 1px no-repeat,
+    linear-gradient(270deg, transparent, rgba(232, 199, 122, .8)) right center / 28px 1px no-repeat,
+    radial-gradient(circle, #e8c77a 2px, transparent 2.5px) center / 9px 9px no-repeat;
+}
+.lu-tabs {
+  display: inline-flex;
+  gap: 4px;
+  margin: 16px auto 0;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(205, 175, 255, .3);
+  background: rgba(20, 14, 50, .6);
+}
+.lu-tab {
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: 600 12px 'Cinzel', serif !important;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.lu-tab.on { background: linear-gradient(180deg, #4b2f70, #2a1843); color: #f4ebff; box-shadow: 0 0 18px rgba(150, 100, 230, .35); }
+.lu-tab:focus-visible { outline: 2px solid #e6d6ff; outline-offset: 2px; }
+
+/* Aujourd'hui */
+.lu-today {
+  display: grid;
+  grid-template-columns: auto minmax(0, 480px);
+  justify-content: center;
+  align-items: center;
+  gap: clamp(20px, 5vw, 64px);
+  margin-top: 26px;
+}
+.lu-moon-col { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.lu-big-moon { display: block; border-radius: 50%; filter: drop-shadow(0 0 40px rgba(255, 225, 160, var(--glow, .4))); }
+.lu-daynav { display: flex; align-items: center; gap: 12px; font: 600 15px 'Cinzel', serif; letter-spacing: .06em; color: #f1e8ff; text-align: center; }
+.lu-daynav button, .lu-nav button {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(205, 175, 255, .35);
+  background: rgba(30, 20, 60, .6);
+  color: #e9dcff;
+  font-size: 20px;
+  cursor: pointer;
+}
+.lu-link { border: 0; background: none; color: var(--gold); font: italic 16px 'Cormorant Garamond', serif !important; text-decoration: underline; cursor: pointer; }
+
+.lu-card {
+  --c: var(--first);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 18px;
+  padding: 20px 22px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--c) 50%, transparent);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--c) 16%, rgba(20, 14, 50, .78)), rgba(15, 10, 40, .82));
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .4);
+}
+.lu-card[data-phase="new"] { --c: var(--new); }
+.lu-card[data-phase="full"] { --c: var(--full); }
+.lu-card[data-phase="last"] { --c: var(--last); }
+.lu-card-title {
+  margin: 0;
+  font: 700 clamp(20px, 2.5vw, 28px)/1.15 'Cinzel', serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--c);
+}
+.lu-motto {
+  margin: 4px 0 0;
+  font: italic 600 clamp(36px, 4.4vw, 52px)/1 'Cormorant Garamond', Georgia, serif;
+  color: #fff6ea;
+  text-shadow: 0 0 22px color-mix(in srgb, var(--c) 40%, transparent);
+}
+.lu-tips {
+  grid-column: 1 / -1;
+  margin: 14px 0 0;
+  padding: 12px 0 0 20px;
+  border-top: 1px solid color-mix(in srgb, var(--c) 25%, transparent);
+  font-size: 19px;
+  line-height: 1.4;
+}
+.lu-name { margin: 18px 0 0; font: 600 13px 'Cinzel', serif; letter-spacing: .22em; text-transform: uppercase; color: #b99be8; }
+.lu-stats { display: flex; gap: 28px; margin: 8px 0 14px; }
+.lu-stats span { display: block; font: 600 26px 'Cinzel', serif; color: #fff5e0; }
+.lu-stats small { font-size: 15px; color: var(--muted); }
+.lu-event { margin: 0 0 14px; font-size: 18px; color: #e6dcff; }
+.lu-event b { font: 600 14px 'Cinzel', serif; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); }
+
+.lu-bar { position: relative; height: 64px; margin: 0 14px; }
+.lu-bar .track { position: absolute; left: 0; right: 0; top: 13px; height: 2px; background: rgba(205, 175, 255, .25); border-radius: 2px; }
+.lu-bar .fill { height: 100%; background: linear-gradient(90deg, rgba(232, 199, 122, .3), var(--gold)); border-radius: 2px; }
+.lu-bar .mark { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: .55; }
+.lu-bar .mark.done { opacity: 1; }
+.lu-bar .mark span { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.lu-bar .now { position: absolute; top: 8px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #fff3d0; box-shadow: 0 0 12px rgba(255, 220, 140, .9); }
+.lu-mini { display: block; border-radius: 50%; }
+
+/* Calendrier */
+.lu-nav { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 26px 0 16px; }
+.lu-nav h3 { margin: 0; min-width: 220px; text-align: center; font: 600 20px 'Cinzel', serif; letter-spacing: .14em; text-transform: uppercase; color: #f4ebff; }
+.lu-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; max-width: 760px; margin: 0 auto; }
+.lu-grid .wd { text-align: center; font: 600 12px 'Cinzel', serif; letter-spacing: .15em; color: var(--muted); padding-bottom: 4px; }
+.lu-grid .cell {
+  --c: var(--first);
+  position: relative;
+  min-height: 86px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 2px;
+  border-radius: 12px;
+  border: 1px solid rgba(205, 175, 255, .14);
+  background: rgba(20, 14, 50, .55);
+  color: #efe8ff;
+  cursor: pointer;
+}
+.lu-grid .cell.empty { border: 0; background: none; cursor: default; }
+.lu-grid .cell:hover { border-color: rgba(205, 175, 255, .45); }
+.lu-grid .n { position: absolute; top: 5px; left: 8px; font: 600 12px 'Cinzel', serif; color: var(--muted); }
+.lu-grid .lbl { font: 600 9px/1.15 'Cinzel', serif; letter-spacing: .06em; text-transform: uppercase; text-align: center; color: var(--c); }
+.lu-grid .cell.major { border-color: color-mix(in srgb, var(--c) 60%, transparent); background: color-mix(in srgb, var(--c) 12%, rgba(20, 14, 50, .7)); }
+.lu-grid .ph-new { --c: var(--new); }
+.lu-grid .ph-full { --c: var(--full); }
+.lu-grid .ph-last { --c: var(--last); }
+.lu-grid .cell.today { box-shadow: 0 0 0 2px var(--gold), 0 0 18px rgba(232, 199, 122, .35); }
+.lu-grid .cell.today .n { color: var(--gold); }
+
+/* Lunaisons */
+.lu-table-wrap { overflow-x: auto; max-width: 960px; margin: 0 auto; border-radius: 14px; border: 1px solid rgba(205, 175, 255, .2); }
+.lu-table { width: 100%; border-collapse: collapse; background: rgba(20, 14, 50, .6); font-size: 16px; }
+.lu-table th, .lu-table td { padding: 9px 12px; text-align: left; white-space: nowrap; border-bottom: 1px solid rgba(205, 175, 255, .12); }
+.lu-table thead th { font: 600 12px 'Cinzel', serif; letter-spacing: .1em; text-transform: uppercase; background: rgba(40, 24, 80, .7); }
+.lu-table .ico { display: inline-block; vertical-align: middle; margin-right: 8px; }
+.lu-table thead .ph-new { color: var(--new); }
+.lu-table thead .ph-first { color: var(--first); }
+.lu-table thead .ph-full { color: var(--full); }
+.lu-table thead .ph-last { color: var(--last); }
+.lu-table tbody th { font: 600 13px 'Cinzel', serif; color: #b99be8; }
+.lu-table tr.current { background: rgba(232, 199, 122, .12); }
+.lu-table tr.current th { color: var(--gold); }
+
+@media (max-width: 760px) {
+  .lu-today { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .lu-info { width: 100%; }
+  .lu-tab { padding: 8px 12px; letter-spacing: .1em; font-size: 11px !important; }
+  .lu-grid { gap: 5px; }
+  .lu-grid .cell { min-height: 58px; border-radius: 9px; }
+  .lu-grid .lbl { display: none; }
+  .lu-tz span { display: none; }
+  .lu-card { padding: 16px; column-gap: 14px; }
+  .lu-card-title { font-size: 19px; letter-spacing: .05em; }
+  .lu-motto { font-size: 38px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ld-glow { animation: none; }
+}

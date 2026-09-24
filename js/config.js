@@ -42,3 +42,14 @@ export const BALL = {
   top: { src: 'img/ball-top.webp', w: 573, h: 715, cx: 281.4, cy: 202.3, r: 197.5 },
   side: { src: 'img/ball-side.webp', w: 846, h: 1311, cx: 419.9, cy: 341.2, r: 337.6 },
 };
+
+// Calendrier lunaire : textes des 4 phases (modifiables dans l'atelier).
+export const DEFAULT_LUNAR = {
+  enabled: true,
+  phases: [
+    { title: 'Nouvelle lune', motto: 'Je sème', tips: ['Poser ses intentions', 'Commencer un projet', 'Écrire ses objectifs', 'Planifier ses actions'] },
+    { title: 'Premier quartier', motto: 'J’agis', tips: ['Passer à l’action', 'Prendre une décision', 'Lever les blocages', 'Oser sortir de sa zone de confort'] },
+    { title: 'Pleine lune', motto: 'Je récolte', tips: ['Faire le bilan', 'Prendre conscience', 'Recevoir des réponses', 'Célébrer les réussites'] },
+    { title: 'Dernier quartier', motto: 'Je libère', tips: ['Lâcher prise', 'Trier et ranger', 'Pardonner', 'Clore ce qui n’a plus sa place'] },
+  ],
+};

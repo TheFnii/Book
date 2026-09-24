@@ -1,5 +1,5 @@
 // Stockage local (IndexedDB) : brouillon de l'éditeur et images pas encore publiées.
-import { BOOK_FILE, DEFAULT_RATIO, DEFAULT_ORACLE } from './config.js';
+import { BOOK_FILE, DEFAULT_RATIO, DEFAULT_ORACLE, DEFAULT_LUNAR } from './config.js';
 
 const DB_NAME = 'grimoire';
 const DB_VERSION = 1;
@@ -61,6 +61,16 @@ export function normalizeBook(b) {
   const answers = Array.isArray(o.answers)
     ? o.answers.map((a) => String(a).trim().slice(0, 200)).filter(Boolean)
     : [...DEFAULT_ORACLE.answers];
+  const l = b.lunar && typeof b.lunar === 'object' ? b.lunar : {};
+  const lp = Array.isArray(l.phases) ? l.phases : [];
+  const lunarPhases = DEFAULT_LUNAR.phases.map((def, i) => {
+    const p = lp[i] && typeof lp[i] === 'object' ? lp[i] : {};
+    return {
+      title: typeof p.title === 'string' ? p.title : def.title,
+      motto: typeof p.motto === 'string' ? p.motto : def.motto,
+      tips: Array.isArray(p.tips) ? p.tips.map((t) => String(t).trim().slice(0, 160)).filter(Boolean) : [...def.tips],
+    };
+  });
   return {
     version: 1,
     cover: {
@@ -75,6 +85,7 @@ export function normalizeBook(b) {
       subtitle: typeof o.subtitle === 'string' ? o.subtitle : DEFAULT_ORACLE.subtitle,
       answers,
     },
+    lunar: { enabled: l.enabled !== false, phases: lunarPhases },
     updated: typeof b.updated === 'string' ? b.updated : null,
     pageRatio: Number(b.pageRatio) > 0.2 && Number(b.pageRatio) < 3 ? Number(b.pageRatio) : DEFAULT_RATIO,
     pages: pages

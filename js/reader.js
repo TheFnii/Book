@@ -4,6 +4,7 @@ import { resolveSrc } from './store.js';
 import { FX } from './fx.js';
 import { Sound } from './sound.js';
 import { Oracle } from './oracle.js';
+import { LunarCalendar } from './lunar.js';
 import { DESK, BALL } from './config.js';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -147,6 +148,10 @@ export class Reader {
       this.oracle = new Oracle(this, book.oracle);
       this.oracle.layout();
     }
+    if (book.lunar && book.lunar.enabled) {
+      this.lunar = new LunarCalendar(this, book.lunar);
+      this.lunar.layout();
+    }
     this.root.classList.add('ready');
   }
 
@@ -245,6 +250,8 @@ export class Reader {
 
     // Le livre est centré sur le sous-main ; la boule est posée sur le bois, à côté.
     const oracleOn = !!(this.book && this.book.oracle && this.book.oracle.enabled);
+    const lunarOn = !!(this.book && this.book.lunar && this.book.lunar.enabled);
+    const objectsOn = oracleOn || lunarOn;
     const P = DESK.pad;
     const R = DESK.ratio;
     const pcx = P.x + P.w / 2;
@@ -256,6 +263,7 @@ export class Reader {
     let ix;
     let iy;
     let ball = null;
+    let dial = null;
     let dims;
     const size = (pw) => {
       const ph = pw / r;
@@ -268,7 +276,7 @@ export class Reader {
 
     if (vw / vh >= 1.15) {
       // Écran large : sous-main centré, boule sur le bois à droite (on réduit un peu le livre si besoin).
-      const minBall = oracleOn ? Math.min(Math.max(vw * 0.085, 70), 150) : 0;
+      const minBall = objectsOn ? Math.min(Math.max(vw * 0.085, 70), 150) : 0;
       const maxPadW = stageW - 2 * (minBall / 0.74 + 8);
       let pw = pwMax;
       for (let i = 0; i < 3; i++) {
@@ -280,23 +288,30 @@ export class Reader {
         const hCover = Math.max(hx / (pcx * R), (vw - hx) / ((1 - pcx) * R), hy / pcy, (vh - hy) / (1 - pcy));
         H = Math.max(hBook, hCover);
         const padW = P.w * H * R;
-        if (!oracleOn || padW <= maxPadW + 1 || hBook <= hCover) break;
+        if (!objectsOn || padW <= maxPadW + 1 || hBook <= hCover) break;
         pw = Math.max(60, Math.floor(pw * Math.max(maxPadW / padW, hCover / hBook)));
       }
       ix = hx - pcx * H * R;
       iy = hy - pcy * H;
-      if (oracleOn) {
+      if (objectsOn) {
         const padRight = ix + (P.x + P.w) * H * R;
+        const padLeft = ix + P.x * H * R;
         const strip = stageW - padRight;
         const w = Math.min(strip * 0.74, 230, (vh * 0.34) / topRatio);
-        if (w >= 50) ball = { w, h: w * topRatio, x: padRight + (strip - w) / 2, y: Math.max(12, iy + P.y * H) };
+        const y = Math.max(12, iy + P.y * H);
+        if (w >= 50) {
+          if (oracleOn) ball = { w, h: w * topRatio, x: padRight + (strip - w) / 2, y };
+          const dw = Math.min(w, padLeft * 0.82);
+          if (lunarOn && dw >= 50) dial = { w: dw, h: dw, x: (padLeft - dw) / 2, y };
+          if (lunarOn && !dial) ball = null;
+        }
       }
     }
-    if (H === undefined || (oracleOn && !ball)) {
+    if (H === undefined || (oracleOn && !ball) || (lunarOn && !dial)) {
       // Écran étroit : boule en haut, sous-main et livre juste en dessous.
       dims = size(pwMax);
-      const w = oracleOn ? Math.min(Math.max(Math.min(vw, vh) * 0.2, 64), 190) : 0;
-      const band = oracleOn ? w * topRatio + 24 : 0;
+      const w = objectsOn ? Math.min(Math.max(Math.min(vw, vh) * 0.2, 64), 190) : 0;
+      const band = objectsOn ? (oracleOn ? w * topRatio : w) + 24 : 0;
       H = Math.max(vh, vw / R, band / P.y, (dims.spreadW * 1.07) / (P.w * R));
       iy = Math.min(0, Math.max(band - P.y * H, vh - H));
       ix = hx - pcx * H * R;
@@ -305,9 +320,11 @@ export class Reader {
       hy = (padTop + padBottom) / 2;
       dims.cs = Math.min(dims.cs, ((padBottom - padTop) * 0.9) / dims.coverH);
       if (oracleOn) ball = { w, h: w * topRatio, x: stageW - w - 12, y: 12 };
+      if (lunarOn) dial = { w, h: w, x: 12, y: 12 };
     }
     const { pw, ph, bm, cs } = dims;
     this.ballRest = ball;
+    this.dialRest = dial;
 
     const desk = this.q('.desk');
     if (!this.book || !this.book.background) {
@@ -330,6 +347,7 @@ export class Reader {
     this.portraitHint = vw < vh && vw < 760;
     this.updateStacks();
     if (this.oracle) this.oracle.layout();
+    if (this.lunar) this.lunar.layout();
   }
 
   onResize() {
@@ -380,6 +398,7 @@ export class Reader {
   async open() {
     if (this.state !== 'closed' || !this.pf) return;
     if (this.oracle && this.oracle.state === 'focus') return;
+    if (this.lunar && this.lunar.isOpen) return;
     this.state = 'opening';
     this.sound.unlock();
     this.sound.chime();
@@ -472,6 +491,10 @@ export class Reader {
     if (e.target && /input|textarea|select/i.test(e.target.tagName)) return;
     if (this.oracle && this.oracle.state === 'focus') {
       if (e.key === 'Escape') this.oracle.close();
+      return;
+    }
+    if (this.lunar && this.lunar.isOpen) {
+      if (e.key === 'Escape') this.lunar.close();
       return;
     }
     if (e.key === 'Escape') {
