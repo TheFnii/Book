@@ -180,6 +180,75 @@ export class Sound {
     this.rustle(land, 0.18, 0.25, 700, 400, 1);
   }
 
+  // Son de verre (partiels presque harmoniques, très purs).
+  glass(freq, t, gain, dur = 2.5) {
+    const ctx = this.ctx;
+    const out = ctx.createGain();
+    out.gain.setValueAtTime(0, t);
+    out.gain.linearRampToValueAtTime(gain, t + 0.02);
+    out.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    out.connect(this.master);
+    out.connect(this.reverb);
+    [[1, 1], [2.01, 0.25], [3.02, 0.08]].forEach(([m, a]) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq * m;
+      g.gain.value = a;
+      o.connect(g).connect(out);
+      o.start(t);
+      o.stop(t + dur + 0.1);
+    });
+  }
+
+  pad(freqs, t, gain, attack, dur, type = 'sine') {
+    const ctx = this.ctx;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    g.connect(this.master);
+    g.connect(this.reverb);
+    freqs.forEach((f) => {
+      const o = ctx.createOscillator();
+      o.type = type;
+      o.frequency.value = f;
+      o.detune.value = (Math.random() - 0.5) * 12;
+      o.connect(g);
+      o.start(t);
+      o.stop(t + dur + 0.1);
+    });
+  }
+
+  // Arrivée sur la boule de cristal.
+  oracleOpen() {
+    if (!this.ready) return;
+    const t = this.ctx.currentTime + 0.02;
+    this.rustle(t, 1, 0.12, 600, 2400, 0.6);
+    this.pad([220, 329.6, 440], t, 0.05, 0.6, 2.8);
+    this.glass(1760, t + 0.5, 0.05, 2.5);
+  }
+
+  // Pendant que la boule « réfléchit ».
+  oracleAsk() {
+    if (!this.ready) return;
+    const t = this.ctx.currentTime + 0.02;
+    this.shimmer(t, 2.4, 0.07);
+    this.pad([146.8, 220, 293.7], t, 0.06, 1.2, 3);
+    const notes = [1318.5, 1568, 1760, 2093, 2349.3, 2637];
+    for (let i = 0; i < 12; i++) {
+      this.glass(notes[Math.floor(Math.random() * notes.length)], t + i * 0.19, 0.018 + i * 0.002, 1.4);
+    }
+  }
+
+  // La réponse apparaît.
+  oracleReveal() {
+    if (!this.ready) return;
+    const t = this.ctx.currentTime + 0.02;
+    [1318.5, 1661.2, 1975.5, 2637].forEach((f, i) => this.glass(f, t + i * 0.06, 0.07 - i * 0.01, 3.2));
+    this.pad([164.8, 246.9, 329.6], t, 0.07, 0.05, 3.2, 'triangle');
+  }
+
   // Petit tintement (clic de bouton, sommaire…).
   tink() {
     if (!this.ready) return;

@@ -51,6 +51,7 @@ export class FX {
       gold: makeGlowSprite(64, 'rgba(255,248,220,1)', 'rgba(255,200,95,0.55)'),
       warm: makeGlowSprite(64, 'rgba(255,230,180,0.9)', 'rgba(255,150,60,0.35)'),
       star: makeStarSprite(64),
+      violet: makeGlowSprite(64, 'rgba(252,244,255,1)', 'rgba(190,145,255,0.6)'),
     };
     this.resize = this.resize.bind(this);
     this.tick = this.tick.bind(this);
@@ -103,7 +104,7 @@ export class FX {
   }
 
   // Gerbe d'étincelles depuis un point.
-  burst(x, y, { count = 40, speed = 160, spread = Math.PI * 2, angle = -Math.PI / 2, gravity = -30, size = 1, stars = 0.25, life = 1.6 } = {}) {
+  burst(x, y, { count = 40, speed = 160, spread = Math.PI * 2, angle = -Math.PI / 2, gravity = -30, size = 1, stars = 0.25, life = 1.6, glow = 'gold' } = {}) {
     const n = Math.round(count * this.scale);
     for (let i = 0; i < n; i++) {
       const a = angle + (Math.random() - 0.5) * spread;
@@ -119,7 +120,7 @@ export class FX {
         size: (isStar ? 10 + Math.random() * 14 : 4 + Math.random() * 9) * size,
         life: 0,
         max: life * (0.6 + Math.random() * 0.8),
-        sprite: isStar ? 'star' : 'gold',
+        sprite: isStar ? 'star' : glow,
         alpha: 1,
         rot: Math.random() * Math.PI,
         vr: (Math.random() - 0.5) * 3,

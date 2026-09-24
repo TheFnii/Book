@@ -3,6 +3,7 @@ import { coverSVG, fitCoverText, spineSVG } from './cover.js';
 import { resolveSrc } from './store.js';
 import { FX } from './fx.js';
 import { Sound } from './sound.js';
+import { Oracle, oracleRest } from './oracle.js';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -141,6 +142,10 @@ export class Reader {
 
     this.layout();
     this.buildPages();
+    if (book.oracle && book.oracle.enabled) {
+      this.oracle = new Oracle(this, book.oracle);
+      this.oracle.layout();
+    }
     this.root.classList.add('ready');
   }
 
@@ -238,7 +243,18 @@ export class Reader {
     const bm = Math.round(pw * bmF);
     const coverW = pw + bm;
     const coverH = ph + 2 * bm;
-    const cs = Math.min((availW * 0.84) / coverW, (availH * 0.84) / coverH, 2.3);
+    let cs = Math.min((availW * 0.84) / coverW, (availH * 0.84) / coverH, 2.3);
+    // Si la boule de voyance chevauche le livre fermé, on descend et réduit un peu le livre.
+    let cty = 0;
+    if (this.book && this.book.oracle && this.book.oracle.enabled) {
+      const o = oracleRest(vw, vh, false, compact);
+      const coverRight = vw / 2 + (cs * (coverW + pw * 0.07)) / 2;
+      if (o.x < coverRight + 8) {
+        const reserve = o.y + o.h + 10;
+        cs = Math.min(cs, ((vh - bar - reserve - pad) * 0.92) / coverH);
+        cty = reserve / 2;
+      }
+    }
     const s = this.bookEl.style;
     s.setProperty('--pw', pw + 'px');
     s.setProperty('--ph', ph + 'px');
@@ -246,9 +262,11 @@ export class Reader {
     s.setProperty('--u', (pw / 300).toFixed(3) + 'px');
     s.setProperty('--cs', cs.toFixed(4));
     s.setProperty('--ctx', (-cs * (pw / 2 + bm / 2)).toFixed(2) + 'px');
+    s.setProperty('--cty', cty.toFixed(1) + 'px');
     this.geom = { pw, ph, bm };
     this.portraitHint = vw < vh && vw < 760;
     this.updateStacks();
+    if (this.oracle) this.oracle.layout();
   }
 
   onResize() {
@@ -298,6 +316,7 @@ export class Reader {
 
   async open() {
     if (this.state !== 'closed' || !this.pf) return;
+    if (this.oracle && this.oracle.state === 'focus') return;
     this.state = 'opening';
     this.sound.unlock();
     this.sound.chime();
@@ -311,6 +330,7 @@ export class Reader {
 
     this.sound.cover();
     this.bookEl.classList.add('cover-open');
+    if (this.oracle) this.oracle.layout();
 
     const st = this.q('.stage').getBoundingClientRect();
     const cx = st.left + st.width / 2;
@@ -337,6 +357,7 @@ export class Reader {
   async close() {
     if (this.state !== 'open') return;
     this.state = 'closing';
+    if (this.oracle) this.oracle.layout();
     this.hidePanels();
     this.root.classList.remove('is-open');
     this.bookEl.classList.remove('pages-front');
@@ -386,6 +407,10 @@ export class Reader {
 
   onKey(e) {
     if (e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+    if (this.oracle && this.oracle.state === 'focus') {
+      if (e.key === 'Escape') this.oracle.close();
+      return;
+    }
     if (e.key === 'Escape') {
       if (!this.q('.toc').hidden || !this.q('.zoom').hidden) this.hidePanels();
       return;

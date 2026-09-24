@@ -1,5 +1,5 @@
 // Stockage local (IndexedDB) : brouillon de l'éditeur et images pas encore publiées.
-import { BOOK_FILE, DEFAULT_RATIO } from './config.js';
+import { BOOK_FILE, DEFAULT_RATIO, DEFAULT_ORACLE } from './config.js';
 
 const DB_NAME = 'grimoire';
 const DB_VERSION = 1;
@@ -57,6 +57,10 @@ export function normalizeBook(b) {
   b = b && typeof b === 'object' ? b : {};
   const cover = b.cover || {};
   const pages = Array.isArray(b.pages) ? b.pages : [];
+  const o = b.oracle && typeof b.oracle === 'object' ? b.oracle : {};
+  const answers = Array.isArray(o.answers)
+    ? o.answers.map((a) => String(a).trim().slice(0, 200)).filter(Boolean)
+    : [...DEFAULT_ORACLE.answers];
   return {
     version: 1,
     cover: {
@@ -65,6 +69,12 @@ export function normalizeBook(b) {
       image: cover.image || null,
     },
     background: b.background || null,
+    oracle: {
+      enabled: o.enabled !== false,
+      title: typeof o.title === 'string' ? o.title : DEFAULT_ORACLE.title,
+      subtitle: typeof o.subtitle === 'string' ? o.subtitle : DEFAULT_ORACLE.subtitle,
+      answers,
+    },
     updated: typeof b.updated === 'string' ? b.updated : null,
     pageRatio: Number(b.pageRatio) > 0.2 && Number(b.pageRatio) < 3 ? Number(b.pageRatio) : DEFAULT_RATIO,
     pages: pages

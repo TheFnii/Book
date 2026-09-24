@@ -48,6 +48,19 @@ La couverture peut être modifiée dans l'atelier : titre sur deux lignes, ou un
 
 ---
 
+## La boule de voyance
+
+Une boule de cristal est posée sur le bureau, en haut à droite. Quand on la touche, la vue se recentre sur elle : on pose sa question en silence, puis on touche **Interroger Lilly**. La boule tourbillonne et une réponse tirée au hasard apparaît à l'intérieur.
+
+Dans l'atelier, l'encadré **Boule de voyance** permet de :
+- l'afficher ou la masquer ;
+- changer le titre et le sous-titre (« Lilly », « Messagère d'univers ») ;
+- modifier la liste des réponses, **une réponse par ligne**.
+
+Comme le reste du livre, les changements sont visibles par tous après avoir cliqué sur **Publier**.
+
+---
+
 ## Installer le livre sur un téléphone
 
 - **Android (Chrome)** : ouvrez le lien du livre → menu **⋮** → **Installer l'application** (ou *Ajouter à l'écran d'accueil*).
@@ -75,6 +88,7 @@ Site statique, sans étape de compilation : HTML, CSS et JavaScript (modules ES)
 | `index.html`, `js/main.js`, `js/reader.js` | Lecteur (scène, ouverture, pages) |
 | `js/cover.js` | Couverture dessinée en SVG |
 | `js/fx.js` | Particules dorées |
+| `js/oracle.js` | Boule de voyance |
 | `js/sound.js` | Sons générés en direct (Web Audio, sans fichier audio) |
 | `editeur.html`, `js/editor.js` | Atelier |
 | `js/github.js` | Publication : un seul commit par publication, via l'API Git de GitHub |

@@ -40,7 +40,12 @@ function saveSettings(s) {
 const gh = () => new GitHub(state.settings);
 
 /* ---------- Modèle ---------- */
-const withIds = (b) => ({ ...b, pages: b.pages.map((p) => ({ id: uid(), ...p })) });
+// Copie profonde : le brouillon ne doit jamais partager d'objet avec la version publiée.
+const withIds = (b) => {
+  const copy = JSON.parse(JSON.stringify(b));
+  copy.pages = copy.pages.map((p) => ({ id: uid(), ...p }));
+  return copy;
+};
 const toBook = (b) => normalizeBook(b);
 function comparable(b) {
   if (!b) return '';
@@ -96,7 +101,19 @@ function render() {
   renderStatus();
   renderCover();
   renderBackground();
+  renderOracle();
   renderPages();
+}
+
+function renderOracle() {
+  const o = state.book.oracle;
+  $('#oracle-on').checked = o.enabled;
+  $('#oracle-fields').hidden = !o.enabled;
+  if (document.activeElement !== $('#oracle-title')) $('#oracle-title').value = o.title;
+  if (document.activeElement !== $('#oracle-subtitle')) $('#oracle-subtitle').value = o.subtitle;
+  if (document.activeElement !== $('#oracle-answers')) $('#oracle-answers').value = o.answers.join('\n');
+  const n = o.answers.length;
+  $('#oracle-count').textContent = n ? `(${n})` : '(aucune : les réponses par défaut seront utilisées)';
 }
 
 function renderStatus() {
@@ -692,6 +709,22 @@ function bindUI() {
     } catch (e) { toast(e.message); } finally { busy(false); }
   });
   $('#bg-rm').onclick = () => mutate(() => { state.book.background = null; });
+
+  $('#oracle-on').onchange = (e) => mutate(() => { state.book.oracle.enabled = e.target.checked; });
+  let oracleHist = false;
+  [['oracle-title', 'title'], ['oracle-subtitle', 'subtitle'], ['oracle-answers', 'answers']].forEach(([id, key]) => {
+    const input = $('#' + id);
+    input.addEventListener('input', () => {
+      if (!oracleHist) { pushHistory(); oracleHist = true; }
+      state.book.oracle[key] = key === 'answers'
+        ? input.value.split('\n').map((l) => l.trim()).filter(Boolean)
+        : input.value;
+      saveDraft();
+      renderStatus();
+      renderOracle();
+    });
+    input.addEventListener('blur', () => { oracleHist = false; });
+  });
 
   document.querySelectorAll('dialog [data-close]').forEach((b) => {
     b.addEventListener('click', () => b.closest('dialog').close());

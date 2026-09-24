@@ -68,6 +68,19 @@
         <p class="help">L’image affichée derrière le livre.</p>
       </section>
 
+      <section class="box oracle-box">
+        <h2>Boule de voyance</h2>
+        <label class="check"><input type="checkbox" id="oracle-on"> Afficher la boule sur le bureau</label>
+        <div id="oracle-fields">
+          <label class="field">Titre<input id="oracle-title" type="text" maxlength="30" autocomplete="off"></label>
+          <label class="field">Sous-titre<input id="oracle-subtitle" type="text" maxlength="40" autocomplete="off"></label>
+          <label class="field">Réponses — une par ligne <span class="count" id="oracle-count"></span>
+            <textarea id="oracle-answers" rows="9" spellcheck="true"></textarea>
+          </label>
+          <p class="help">À chaque question, une réponse est tirée au hasard dans cette liste.</p>
+        </div>
+      </section>
+
       <section class="box how">
         <h2>Mode d’emploi</h2>
         <ol>
