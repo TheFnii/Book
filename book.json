@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "cover": {
+    "line1": "Le Grimoire de",
+    "line2": "Lilly",
+    "image": null
+  },
+  "background": null,
+  "pageRatio": 0.707,
+  "pages": [
+    {
+      "src": "pages/87f228a9fa579e74.webp",
+      "w": 1414,
+      "h": 2000,
+      "title": "Le Trèfle à quatre feuilles"
+    },
+    {
+      "src": "pages/1afa78ab46dcd3c0.webp",
+      "w": 1414,
+      "h": 2000,
+      "title": "Autour du monde"
+    }
+  ]
+}

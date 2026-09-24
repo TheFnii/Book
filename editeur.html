@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atelier du Grimoire</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#140b06">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5Q12.9 11.1 22.5 12Q12.9 12.9 12 22.5Q11.1 12.9 1.5 12Q11.1 11.1 12 1.5Z"/></svg>
+      <div>
+        <h1>Atelier du Grimoire</h1>
+        <p class="status" id="status">Chargement…</p>
+      </div>
+    </div>
+    <nav class="top-actions">
+      <button type="button" id="undo" class="btn ghost" title="Annuler la dernière action (Ctrl+Z)" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 010 11H11"/></svg><span>Annuler</span>
+      </button>
+      <a class="btn ghost" href="./" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 3.5 5v13.5c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z"/><path d="M12 6.5V20"/></svg><span>Livre publié</span>
+      </a>
+      <button type="button" id="preview" class="btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>Aperçu</span>
+      </button>
+      <button type="button" id="publish" class="btn primary">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg><span>Publier</span>
+      </button>
+      <button type="button" id="settings" class="btn icon" title="Connexion GitHub" aria-label="Connexion GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+      </button>
+    </nav>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <main class="layout">
+    <aside class="side">
+      <section class="box">
+        <h2>Couverture</h2>
+        <div class="cover-preview" id="cover-preview"></div>
+        <label class="field">Titre — première ligne
+          <input id="line1" type="text" maxlength="40" autocomplete="off">
+        </label>
+        <label class="field">Titre — deuxième ligne
+          <input id="line2" type="text" maxlength="24" autocomplete="off">
+        </label>
+        <div class="row wrap">
+          <button type="button" id="cover-img" class="btn small">Utiliser une image…</button>
+          <button type="button" id="cover-img-rm" class="btn small ghost" hidden>Couverture dessinée</button>
+        </div>
+        <p class="help">Vous pouvez aussi créer votre couverture dans Canva (même format que vos pages) et l’importer ici.</p>
+      </section>
+
+      <section class="box">
+        <h2>Décor</h2>
+        <div class="bg-preview" id="bg-preview"></div>
+        <div class="row wrap">
+          <button type="button" id="bg-img" class="btn small">Choisir un fond…</button>
+          <button type="button" id="bg-rm" class="btn small ghost" hidden>Bureau par défaut</button>
+        </div>
+        <p class="help">L’image affichée derrière le livre.</p>
+      </section>
+
+      <section class="box how">
+        <h2>Mode d’emploi</h2>
+        <ol>
+          <li>Dans Canva : <b>Partager → Télécharger → PNG</b>, toutes les pages.</li>
+          <li>Glissez les fichiers ici. Rangez-les par glisser-déposer ou avec les flèches.</li>
+          <li>Vérifiez le résultat avec <b>Aperçu</b>.</li>
+          <li>Cliquez sur <b>Publier</b> : tout le monde voit la nouvelle version en une minute environ.</li>
+        </ol>
+        <p class="help">Tant que vous ne publiez pas, vos modifications restent un brouillon enregistré automatiquement sur cet appareil.</p>
+        <button type="button" id="discard" class="btn small danger">Abandonner le brouillon</button>
+      </section>
+    </aside>
+
+    <section class="pages-area">
+      <div class="pages-head">
+        <h2>Pages <span id="count" class="count"></span></h2>
+        <div class="row wrap">
+          <button type="button" id="add" class="btn primary">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Ajouter des pages</span>
+          </button>
+          <button type="button" id="add-blank" class="btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg><span>Page blanche</span>
+          </button>
+        </div>
+      </div>
+      <p class="insert-at" id="insert-at"></p>
+      <button type="button" id="dropzone" class="dropzone">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+        <span><b>Glissez vos pages Canva ici</b><br>ou touchez pour les choisir (PNG, JPG, WebP)</span>
+      </button>
+      <div id="spreads" class="spreads" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <input type="file" id="file-multi" accept="image/png,image/jpeg,image/webp" multiple hidden>
+  <input type="file" id="file-one" accept="image/png,image/jpeg,image/webp" hidden>
+
+  <dialog id="dlg-preview" class="dlg dlg-full">
+    <iframe id="preview-frame" title="Aperçu du livre" allow="fullscreen"></iframe>
+    <button type="button" class="btn close-preview" data-close>Fermer l’aperçu</button>
+  </dialog>
+
+  <dialog id="dlg-settings" class="dlg">
+    <form method="dialog" id="settings-form">
+      <h2>Connexion à GitHub</h2>
+      <p class="help" id="settings-intro">Pour publier, l’atelier a besoin d’une clé d’accès (« jeton ») à votre dépôt GitHub. Elle reste enregistrée uniquement dans ce navigateur.</p>
+      <details class="how-token">
+        <summary>Comment créer le jeton ?</summary>
+        <ol>
+          <li>Ouvrez <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → Settings → Developer settings → Fine-grained tokens → Generate new token</a>.</li>
+          <li>Nom : <i>Atelier du Grimoire</i>. Expiration : à votre convenance (1 an par exemple).</li>
+          <li><b>Repository access</b> : <i>Only select repositories</i> → choisissez <b>Book</b>.</li>
+          <li><b>Permissions → Repository permissions → Contents</b> : <i>Read and write</i>.</li>
+          <li>Cliquez sur <b>Generate token</b>, copiez-le et collez-le ci-dessous.</li>
+        </ol>
+      </details>
+      <div class="grid2">
+        <label class="field">Propriétaire<input id="gh-owner" type="text" autocomplete="off" spellcheck="false"></label>
+        <label class="field">Dépôt<input id="gh-repo" type="text" autocomplete="off" spellcheck="false"></label>
+      </div>
+      <label class="field">Branche publiée<input id="gh-branch" type="text" autocomplete="off" spellcheck="false"></label>
+      <label class="field">Jeton d’accès<input id="gh-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>
+      <p class="result" id="gh-result" role="status"></p>
+      <div class="row end wrap">
+        <button type="button" id="gh-forget" class="btn small ghost danger">Oublier le jeton</button>
+        <button type="button" id="gh-test" class="btn small">Tester</button>
+        <button type="button" id="gh-save" class="btn small primary">Enregistrer</button>
+        <button type="button" class="btn small ghost" data-close>Fermer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-publish" class="dlg">
+    <div class="publish-body">
+      <h2>Publier le grimoire</h2>
+      <p id="pub-summary"></p>
+      <label class="field">Note (facultative)<input id="pub-note" type="text" maxlength="80" placeholder="ex. Ajout des pages sur la lune"></label>
+      <div class="progress" id="pub-progress" hidden><div class="spinner"></div><span id="pub-text"></span></div>
+      <p class="result" id="pub-result" role="status"></p>
+      <div class="row end wrap" id="pub-actions">
+        <button type="button" class="btn small ghost" data-close>Annuler</button>
+        <button type="button" id="pub-go" class="btn small primary">Publier maintenant</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div id="busy" class="busy" hidden><div class="spinner"></div><span id="busy-text"></span></div>
+  <div id="dropveil" class="dropveil" hidden><div>Déposez vos pages ici</div></div>
+  <div id="toast" class="toast" role="status"></div>
+
+  <script type="module" src="js/editor.js"></script>
+</body>
+</html>

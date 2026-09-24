@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Le Grimoire de Lilly</title>
+  <meta name="description" content="Un grimoire interactif à feuilleter.">
+  <meta name="theme-color" content="#140b06">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preload" href="fonts/unifrakturmaguntia-5.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <link rel="stylesheet" href="css/reader.css">
+</head>
+<body>
+  <div id="app" class="reader"></div>
+  <noscript>Ce grimoire a besoin de JavaScript pour s’ouvrir.</noscript>
+  <script src="lib/page-flip.browser.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
