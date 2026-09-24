@@ -27,3 +27,18 @@ export const DEFAULT_ORACLE = {
     'Le chemin se dessine encore', 'Attends un signe des étoiles', 'Le temps apportera la réponse',
   ],
 };
+
+// Décor par défaut : bureau en bois avec sous-main en cuir.
+// Positions exprimées en fraction de l'image (mesurées sur la photo).
+export const DESK = {
+  src: 'img/desk.jpg',
+  ratio: 1408 / 768, // largeur / hauteur de la photo
+  pad: { x: 300 / 1408, y: 105 / 768, w: 810 / 1408, h: 565 / 768 }, // rectangle du sous-main
+};
+
+// Boule de voyance : vue de haut (sur le bureau) et vue de côté (quand on la consulte).
+// cx, cy, r : centre et rayon de la sphère dans l'image, en pixels.
+export const BALL = {
+  top: { src: 'img/ball-top.webp', w: 573, h: 715, cx: 281.4, cy: 202.3, r: 197.5 },
+  side: { src: 'img/ball-side.webp', w: 846, h: 1311, cx: 419.9, cy: 341.2, r: 337.6 },
+};

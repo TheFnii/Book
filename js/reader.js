@@ -3,7 +3,8 @@ import { coverSVG, fitCoverText, spineSVG } from './cover.js';
 import { resolveSrc } from './store.js';
 import { FX } from './fx.js';
 import { Sound } from './sound.js';
-import { Oracle, oracleRest } from './oracle.js';
+import { Oracle } from './oracle.js';
+import { DESK, BALL } from './config.js';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -234,27 +235,88 @@ export class Reader {
     const bar = compact ? 0 : 66;
     const side = compact ? 62 : 0;
     const pad = vw < 600 || compact ? 10 : 26;
-    const availW = vw - pad * 2 - side;
-    const availH = vh - bar - pad * 2;
+    const stageW = vw - side;
+    const stageH = vh - bar;
+    const availW = stageW - pad * 2;
+    const availH = stageH - pad * 2;
     const r = this.ratio;
     const bmF = 0.04;
-    const pw = Math.max(60, Math.floor(Math.min(availW / (2 + 2 * bmF), availH / (1 / r + 2 * bmF + 0.03))));
-    const ph = pw / r;
-    const bm = Math.round(pw * bmF);
-    const coverW = pw + bm;
-    const coverH = ph + 2 * bm;
-    let cs = Math.min((availW * 0.84) / coverW, (availH * 0.84) / coverH, 2.3);
-    // Si la boule de voyance chevauche le livre fermé, on descend et réduit un peu le livre.
-    let cty = 0;
-    if (this.book && this.book.oracle && this.book.oracle.enabled) {
-      const o = oracleRest(vw, vh, false, compact);
-      const coverRight = vw / 2 + (cs * (coverW + pw * 0.07)) / 2;
-      if (o.x < coverRight + 8) {
-        const reserve = o.y + o.h + 10;
-        cs = Math.min(cs, ((vh - bar - reserve - pad) * 0.92) / coverH);
-        cty = reserve / 2;
+    const pwMax = Math.max(60, Math.floor(Math.min(availW / (2 + 2 * bmF), availH / (1 / r + 2 * bmF + 0.03))));
+
+    // Le livre est centré sur le sous-main ; la boule est posée sur le bois, à côté.
+    const oracleOn = !!(this.book && this.book.oracle && this.book.oracle.enabled);
+    const P = DESK.pad;
+    const R = DESK.ratio;
+    const pcx = P.x + P.w / 2;
+    const pcy = P.y + P.h / 2;
+    const topRatio = BALL.top.h / BALL.top.w;
+    const hx = stageW / 2;
+    let hy = stageH / 2;
+    let H;
+    let ix;
+    let iy;
+    let ball = null;
+    let dims;
+    const size = (pw) => {
+      const ph = pw / r;
+      const bm = Math.round(pw * bmF);
+      const coverW = pw + bm;
+      const coverH = ph + 2 * bm;
+      const cs = Math.min((availW * 0.84) / coverW, (availH * 0.84) / coverH, 2.3);
+      return { pw, ph, bm, coverW, coverH, cs, spreadW: 2 * pw + 2 * bm, spreadH: ph + 2 * bm + ph * 0.03 };
+    };
+
+    if (vw / vh >= 1.15) {
+      // Écran large : sous-main centré, boule sur le bois à droite (on réduit un peu le livre si besoin).
+      const minBall = oracleOn ? Math.min(Math.max(vw * 0.085, 70), 150) : 0;
+      const maxPadW = stageW - 2 * (minBall / 0.74 + 8);
+      let pw = pwMax;
+      for (let i = 0; i < 3; i++) {
+        dims = size(pw);
+        const hBook = Math.max(
+          Math.max(dims.spreadW * 1.07, dims.cs * dims.coverW * 1.3) / (P.w * R),
+          Math.max(dims.spreadH * 1.08, dims.cs * dims.coverH * 1.08) / P.h,
+        );
+        const hCover = Math.max(hx / (pcx * R), (vw - hx) / ((1 - pcx) * R), hy / pcy, (vh - hy) / (1 - pcy));
+        H = Math.max(hBook, hCover);
+        const padW = P.w * H * R;
+        if (!oracleOn || padW <= maxPadW + 1 || hBook <= hCover) break;
+        pw = Math.max(60, Math.floor(pw * Math.max(maxPadW / padW, hCover / hBook)));
+      }
+      ix = hx - pcx * H * R;
+      iy = hy - pcy * H;
+      if (oracleOn) {
+        const padRight = ix + (P.x + P.w) * H * R;
+        const strip = stageW - padRight;
+        const w = Math.min(strip * 0.74, 230, (vh * 0.34) / topRatio);
+        if (w >= 50) ball = { w, h: w * topRatio, x: padRight + (strip - w) / 2, y: Math.max(12, iy + P.y * H) };
       }
     }
+    if (H === undefined || (oracleOn && !ball)) {
+      // Écran étroit : boule en haut, sous-main et livre juste en dessous.
+      dims = size(pwMax);
+      const w = oracleOn ? Math.min(Math.max(Math.min(vw, vh) * 0.2, 64), 190) : 0;
+      const band = oracleOn ? w * topRatio + 24 : 0;
+      H = Math.max(vh, vw / R, band / P.y, (dims.spreadW * 1.07) / (P.w * R));
+      iy = Math.min(0, Math.max(band - P.y * H, vh - H));
+      ix = hx - pcx * H * R;
+      const padTop = iy + P.y * H;
+      const padBottom = Math.min(iy + (P.y + P.h) * H, stageH);
+      hy = (padTop + padBottom) / 2;
+      dims.cs = Math.min(dims.cs, ((padBottom - padTop) * 0.9) / dims.coverH);
+      if (oracleOn) ball = { w, h: w * topRatio, x: stageW - w - 12, y: 12 };
+    }
+    const { pw, ph, bm, cs } = dims;
+    this.ballRest = ball;
+
+    const desk = this.q('.desk');
+    if (!this.book || !this.book.background) {
+      desk.style.backgroundSize = `${(H * R).toFixed(1)}px ${H.toFixed(1)}px`;
+      desk.style.backgroundPosition = `${ix.toFixed(1)}px ${iy.toFixed(1)}px`;
+    }
+    this.root.style.setProperty('--lx', ((hx / vw) * 100).toFixed(1) + '%');
+    this.root.style.setProperty('--ly', ((hy / vh) * 100).toFixed(1) + '%');
+
     const s = this.bookEl.style;
     s.setProperty('--pw', pw + 'px');
     s.setProperty('--ph', ph + 'px');
@@ -262,7 +324,8 @@ export class Reader {
     s.setProperty('--u', (pw / 300).toFixed(3) + 'px');
     s.setProperty('--cs', cs.toFixed(4));
     s.setProperty('--ctx', (-cs * (pw / 2 + bm / 2)).toFixed(2) + 'px');
-    s.setProperty('--cty', cty.toFixed(1) + 'px');
+    s.setProperty('--bx', (hx - stageW / 2).toFixed(1) + 'px');
+    s.setProperty('--by', (hy - stageH / 2).toFixed(1) + 'px');
     this.geom = { pw, ph, bm };
     this.portraitHint = vw < vh && vw < 760;
     this.updateStacks();

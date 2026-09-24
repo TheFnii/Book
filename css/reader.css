@@ -37,16 +37,16 @@ body {
   position: absolute;
   inset: 0;
   background: #1d110a url(../img/desk.jpg) center / cover no-repeat;
-  filter: saturate(.85) brightness(.6);
+  filter: brightness(.82);
 }
-.scene.custom-bg .desk { filter: brightness(.85); }
+.scene.custom-bg .desk { filter: brightness(.85); background-size: cover !important; background-position: center !important; }
 
 .light {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 55% 50% at 50% 46%, rgba(255, 196, 120, .24), rgba(255, 160, 80, .07) 55%, transparent 75%),
-    radial-gradient(ellipse 115% 100% at 50% 45%, transparent 38%, rgba(8, 4, 2, .9) 100%);
+    radial-gradient(ellipse 55% 50% at var(--lx, 50%) var(--ly, 46%), rgba(255, 196, 120, .2), rgba(255, 160, 80, .06) 55%, transparent 75%),
+    radial-gradient(ellipse 120% 105% at var(--lx, 50%) var(--ly, 45%), transparent 45%, rgba(8, 4, 2, .75) 100%);
 }
 
 .candle {
@@ -89,12 +89,12 @@ body {
   width: calc(var(--pw) * 2);
   height: var(--ph);
   perspective: calc(var(--pw) * 5);
-  transform: translateX(var(--ctx)) translateY(var(--cty, 0px)) scale(var(--cs));
+  transform: translateX(var(--ctx)) translate(var(--bx, 0px), var(--by, 0px)) scale(var(--cs));
   transition: transform 1.6s cubic-bezier(.62, .02, .3, 1), opacity .8s ease;
   opacity: 0;
 }
 .reader.ready .book { opacity: 1; }
-.book.cover-open { transform: translateX(0) translateY(0) scale(1); }
+.book.cover-open { transform: translateX(0) translate(var(--bx, 0px), var(--by, 0px)) scale(1); }
 
 /* Plats de reliure (cuir) */
 .board {
@@ -627,72 +627,116 @@ body {
 }
 
 /* ---------- Boule de voyance ---------- */
+/* Sur le bureau (vue de haut) */
+.oracle-desk {
+  position: absolute;
+  z-index: 5;
+  cursor: pointer;
+  outline: none;
+  animation: oracleIn 1.4s ease .3s both;
+  transition: opacity .45s ease .7s;
+  -webkit-tap-highlight-color: transparent;
+}
+@keyframes oracleIn { from { opacity: 0; } }
+.oracle-desk img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 calc(var(--u, 2px) * 4) calc(var(--u, 2px) * 6) rgba(0, 0, 0, .7));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.od-glow {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(1.35);
+  background: radial-gradient(closest-side, rgba(205, 165, 255, .5), rgba(150, 100, 230, .16) 60%, transparent);
+  animation: oglow 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+.od-mist {
+  position: absolute;
+  border-radius: 50%;
+  overflow: hidden;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  opacity: .55;
+  pointer-events: none;
+}
+.oracle-desk:hover .od-glow { animation-duration: 2s; }
+.oracle-desk:focus-visible img { outline: 3px solid rgba(220, 200, 255, .8); outline-offset: 4px; border-radius: 50%; }
+.reader.is-opening .oracle-desk, .reader.panel-open .oracle-desk { pointer-events: none; }
+.reader.oracle-open .oracle-desk { opacity: 0; pointer-events: none; transition: opacity .35s ease; }
+
+@keyframes oglow {
+  0%, 100% { opacity: .55; transform: scale(1.3); }
+  50% { opacity: 1; transform: scale(1.4); }
+}
+
+/* Au premier plan (vue de côté) */
 .oracle {
   position: absolute;
   left: 0;
   top: 0;
   z-index: 16;
   transform-origin: 0 0;
-  transition: transform 1.1s cubic-bezier(.6, .02, .25, 1);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 1.1s cubic-bezier(.6, .02, .25, 1), opacity .45s ease .6s;
   cursor: pointer;
-  outline: none;
-  animation: oracleIn 1.4s ease .3s both;
 }
-@keyframes oracleIn { from { opacity: 0; } }
-.reader.is-opening .oracle, .reader.panel-open .oracle { pointer-events: none; }
-.oracle:focus-visible .orb { box-shadow: 0 0 0 4px rgba(220, 200, 255, .8); }
-
+.reader.oracle-open .oracle {
+  opacity: 1;
+  pointer-events: auto;
+  transition: transform 1.1s cubic-bezier(.6, .02, .25, 1), opacity .45s ease;
+}
+.oracle-img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 calc(var(--ow) * .04) calc(var(--ow) * .05) rgba(0, 0, 0, .75));
+  user-select: none;
+  -webkit-user-drag: none;
+}
 .oracle-glow {
   position: absolute;
-  left: -6%;
-  top: -4%;
-  width: 112%;
-  height: 80%;
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(205, 165, 255, .55), rgba(150, 100, 230, .2) 58%, transparent);
-  animation: oglow 4.5s ease-in-out infinite;
+  animation: ofglow 4.5s ease-in-out infinite;
   pointer-events: none;
 }
-@keyframes oglow {
-  0%, 100% { opacity: .55; transform: scale(.96); }
-  50% { opacity: 1; transform: scale(1.04); }
+@keyframes ofglow {
+  0%, 100% { opacity: .55; transform: scale(1.2); }
+  50% { opacity: 1; transform: scale(1.3); }
 }
-.oracle:hover .oracle-glow { animation-duration: 2.2s; }
 .oracle.asking .oracle-glow { animation: oglowFast .7s ease-in-out infinite; }
 @keyframes oglowFast {
-  0%, 100% { opacity: .8; transform: scale(1.02); }
-  50% { opacity: 1; transform: scale(1.14); }
+  0%, 100% { opacity: .8; transform: scale(1.25); }
+  50% { opacity: 1; transform: scale(1.45); }
 }
 
 .orb {
   position: absolute;
-  left: 12.5%;
-  top: 7.1428%;
-  width: 75%;
-  height: 53.5714%;
   border-radius: 50%;
   overflow: hidden;
   isolation: isolate;
   -webkit-mask-image: -webkit-radial-gradient(white, black);
-  background: radial-gradient(circle at 40% 30%, #fcf6ff 0%, #e8d9f0 13%, #c6aed9 34%, #9579ae 58%, #5d4777 80%, #2a1d3b 100%);
-  box-shadow:
-    inset calc(var(--ow) * -.04) calc(var(--ow) * -.06) calc(var(--ow) * .12) rgba(30, 12, 50, .55),
-    inset calc(var(--ow) * .02) calc(var(--ow) * .02) calc(var(--ow) * .08) rgba(255, 255, 255, .35),
-    0 0 calc(var(--ow) * .1) rgba(190, 150, 255, .35);
+  box-shadow: inset 0 0 calc(var(--ow) * .08) rgba(255, 225, 255, .22);
 }
 .mist { position: absolute; inset: -30%; mix-blend-mode: screen; pointer-events: none; }
 .m1 {
   background:
-    radial-gradient(circle at 35% 40%, rgba(255, 215, 248, .6), transparent 22%),
-    radial-gradient(circle at 62% 58%, rgba(160, 120, 235, .6), transparent 26%),
-    radial-gradient(circle at 48% 72%, rgba(255, 255, 255, .35), transparent 20%),
-    radial-gradient(circle at 70% 30%, rgba(120, 80, 200, .45), transparent 18%);
+    radial-gradient(circle at 35% 40%, rgba(255, 215, 248, .45), transparent 22%),
+    radial-gradient(circle at 62% 58%, rgba(170, 130, 240, .45), transparent 26%),
+    radial-gradient(circle at 48% 72%, rgba(255, 255, 255, .25), transparent 20%),
+    radial-gradient(circle at 70% 30%, rgba(140, 100, 220, .35), transparent 18%);
   animation: ospin 24s linear infinite;
 }
 .m2 {
   background:
-    radial-gradient(circle at 60% 35%, rgba(230, 200, 255, .55), transparent 24%),
-    radial-gradient(circle at 38% 62%, rgba(255, 190, 230, .4), transparent 22%);
+    radial-gradient(circle at 60% 35%, rgba(230, 200, 255, .4), transparent 24%),
+    radial-gradient(circle at 38% 62%, rgba(255, 190, 230, .3), transparent 22%);
   animation: ospin 37s linear infinite reverse;
 }
 @keyframes ospin { to { transform: rotate(360deg); } }
@@ -700,7 +744,7 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(50, 16, 90, .92), rgba(85, 40, 145, .7) 45%, rgba(120, 80, 180, 0) 78%);
+  background: radial-gradient(circle at 50% 50%, rgba(45, 14, 85, .9), rgba(80, 36, 140, .65) 45%, rgba(120, 80, 180, 0) 80%);
   opacity: 0;
   transition: opacity 1.2s;
 }
@@ -717,29 +761,6 @@ body {
 .oracle.asking .vortex { opacity: 1; }
 .oracle.answered .vortex { opacity: .3; animation-duration: 9s; }
 .oracle.asking .depth, .oracle.answered .depth { opacity: 1; }
-.twinkles i {
-  position: absolute;
-  width: 2.2%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 calc(var(--ow) * .02) #fff, 0 0 calc(var(--ow) * .04) rgba(210, 180, 255, .9);
-  animation: otwinkle 3.4s ease-in-out infinite;
-}
-@keyframes otwinkle {
-  0%, 100% { opacity: 0; transform: scale(.4); }
-  50% { opacity: 1; transform: scale(1); }
-}
-.orb-shine {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 20% 13% at 36% 22%, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 100%),
-    radial-gradient(circle at 70% 82%, rgba(255, 235, 255, .3), transparent 22%),
-    radial-gradient(circle at 50% 50%, transparent 64%, rgba(255, 255, 255, .14) 70%, transparent 73%);
-}
 .answer {
   position: absolute;
   left: 14%;
@@ -748,7 +769,7 @@ body {
   margin: 0;
   text-align: center;
   font-family: 'Princess Sofia', cursive;
-  font-size: calc(var(--ow) * .075);
+  font-size: calc(var(--ow) * .08);
   line-height: 1.12;
   color: #fff8ff;
   text-shadow: 0 0 calc(var(--ow) * .015) rgba(255, 255, 255, .9), 0 0 calc(var(--ow) * .05) rgba(205, 145, 255, .95);
@@ -759,7 +780,6 @@ body {
   pointer-events: none;
 }
 .oracle.answered .answer { opacity: 1; filter: none; transform: translateY(-50%) scale(1); }
-.oracle-base { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 
 /* Mise au point sur la boule */
 .stage, .scene { transition: filter 1s ease, transform 1.2s cubic-bezier(.6, .02, .25, 1); }
@@ -832,7 +852,7 @@ body {
     linear-gradient(270deg, transparent, rgba(232, 199, 122, .8)) right center / 28px 1px no-repeat,
     radial-gradient(circle, #e8c77a 2px, transparent 2.5px) center / 9px 9px no-repeat;
 }
-.oracle-slot { flex: none; width: var(--ow); height: calc(var(--ow) * 1.4); }
+.oracle-slot { flex: none; width: var(--ow); height: calc(var(--ow) * var(--osr, 1.55)); }
 .oracle-controls { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .oracle-prompt {
   margin: 0;
@@ -901,5 +921,5 @@ body {
 .reader.compact .oracle-ask { min-width: 0; width: 100%; padding: 12px 18px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .m1, .m2, .oracle-glow, .twinkles i { animation: none; }
+  .m1, .m2, .oracle-glow, .od-glow { animation: none; }
 }
