@@ -179,23 +179,7 @@ export class Oracle {
     this.askBtn.disabled = true;
     this.promptEl.textContent = 'Les étoiles t’écoutent…';
 
-    // Tourbillon d'étincelles autour de la boule.
-    const start = performance.now();
-    const swirl = setInterval(() => {
-      const c = this.orbCenter();
-      const t = (performance.now() - start) / 1000;
-      for (let i = 0; i < 3; i++) {
-        const a = Math.random() * Math.PI * 2;
-        const rr = c.r * (1.02 + Math.random() * 0.12);
-        this.fx.burst(c.x + Math.cos(a) * rr, c.y + Math.sin(a) * rr, {
-          count: 1 / this.fx.scale, speed: 40 + t * 30, angle: a + Math.PI / 2, spread: 0.6,
-          gravity: -20, life: 1.1, stars: 0, size: 0.8, glow: 'violet',
-        });
-      }
-    }, 90);
-
-    await sleep(2500);
-    clearInterval(swirl);
+    await sleep(2800);
     this.answerEl.textContent = this.pick();
     this.fitAnswer();
     this.el.classList.remove('asking');

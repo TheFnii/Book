@@ -710,11 +710,6 @@ body {
   0%, 100% { opacity: .55; transform: scale(1.2); }
   50% { opacity: 1; transform: scale(1.3); }
 }
-.oracle.asking .oracle-glow { animation: oglowFast .7s ease-in-out infinite; }
-@keyframes oglowFast {
-  0%, 100% { opacity: .8; transform: scale(1.25); }
-  50% { opacity: 1; transform: scale(1.45); }
-}
 
 .orb {
   position: absolute;
@@ -744,22 +739,24 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(45, 14, 85, .9), rgba(80, 36, 140, .65) 45%, rgba(120, 80, 180, 0) 80%);
+  background: radial-gradient(circle at 50% 50%, rgba(45, 14, 85, .5), rgba(80, 36, 140, .25) 45%, rgba(120, 80, 180, 0) 72%);
   opacity: 0;
-  transition: opacity 1.2s;
+  transition: opacity 1.6s ease;
 }
 .vortex {
   position: absolute;
-  inset: -12%;
+  inset: 6%;
   border-radius: 50%;
   opacity: 0;
-  background: conic-gradient(from 0deg, rgba(90, 30, 150, 0), rgba(130, 60, 200, .75), rgba(255, 170, 235, .4), rgba(60, 20, 120, .8), rgba(205, 150, 255, .5), rgba(90, 30, 150, 0));
-  filter: blur(calc(var(--ow) * .03));
-  animation: ospin 1.7s linear infinite;
-  transition: opacity .8s;
+  background: conic-gradient(from 0deg, rgba(150, 100, 220, 0), rgba(165, 120, 230, .35), rgba(255, 210, 245, .18), rgba(120, 70, 190, .32), rgba(215, 180, 255, .2), rgba(150, 100, 220, 0));
+  filter: blur(calc(var(--ow) * .05));
+  -webkit-mask-image: radial-gradient(circle, #000 30%, transparent 68%);
+  mask-image: radial-gradient(circle, #000 30%, transparent 68%);
+  animation: ospin 7s linear infinite;
+  transition: opacity 1.6s ease;
 }
-.oracle.asking .vortex { opacity: 1; }
-.oracle.answered .vortex { opacity: .3; animation-duration: 9s; }
+.oracle.asking .vortex { opacity: .5; }
+.oracle.answered .vortex { opacity: .18; animation-duration: 16s; }
 .oracle.asking .depth, .oracle.answered .depth { opacity: 1; }
 .answer {
   position: absolute;
@@ -768,11 +765,17 @@ body {
   top: 50%;
   margin: 0;
   text-align: center;
-  font-family: 'Princess Sofia', cursive;
-  font-size: calc(var(--ow) * .08);
-  line-height: 1.12;
-  color: #fff8ff;
-  text-shadow: 0 0 calc(var(--ow) * .015) rgba(255, 255, 255, .9), 0 0 calc(var(--ow) * .05) rgba(205, 145, 255, .95);
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: calc(var(--ow) * .048);
+  line-height: 1.45;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #f7f0ff;
+  text-shadow:
+    0 0 2px rgba(40, 10, 70, .85),
+    0 0 calc(var(--ow) * .035) rgba(80, 35, 150, .9),
+    0 0 calc(var(--ow) * .08) rgba(200, 150, 255, .55);
   opacity: 0;
   filter: blur(6px);
   transform: translateY(-50%) scale(.88);
