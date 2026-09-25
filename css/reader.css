@@ -695,6 +695,13 @@ body {
 @media (hover: none) {
   .desk-label { opacity: .85; transform: translate(calc(-50% + var(--lsh, 0px)), 0); letter-spacing: .08em; }
 }
+@media (max-width: 480px) {
+  .reader .desk-label, .reader .cdk-label, .reader .le-desk-label { font-size: 10px; letter-spacing: .06em; }
+}
+/* Écran tactile : pendant la lecture, les textes du bureau s'effacent. */
+@media (hover: none) {
+  .reader.is-open .desk-label, .reader.is-open .cdk-label, .reader.is-open .le-desk-label { opacity: 0; }
+}
 
 /* Au premier plan (vue de côté) */
 .oracle {

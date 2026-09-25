@@ -10,12 +10,17 @@ function esc(s) {
 }
 
 // Texte sous un objet du bureau : un peu plus large que l'objet, jamais hors de l'écran.
-export function placeLabel(el, rest) {
+export function placeLabel(el, rest, wide = window.innerWidth >= 700 ? 200 : 96) {
   if (!el) return;
-  el.style.width = Math.max(rest.w + 16, window.innerWidth >= 700 ? 200 : 96).toFixed(0) + 'px';
-  const lw = el.offsetWidth;
-  const cx = rest.x + rest.w / 2;
   const vw = window.innerWidth;
+  const cx = rest.x + rest.w / 2;
+  // Centré sous l'objet : assez étroit pour ne pas toucher le bord de l'écran.
+  let w = Math.max(rest.w + 16, wide);
+  if (vw < 700) w = Math.min(w, 2 * (Math.min(cx, vw - cx) - 6));
+  el.style.width = w.toFixed(0) + 'px';
+  // Sur téléphone, tous les textes du haut de l'écran sont sur la même ligne.
+  el.style.top = rest.labelY != null ? (rest.labelY - rest.y).toFixed(1) + 'px' : '';
+  const lw = el.offsetWidth;
   const shift = Math.max(6 + lw / 2 - cx, Math.min(0, vw - 6 - lw / 2 - cx));
   el.style.setProperty('--lsh', shift.toFixed(1) + 'px');
 }

@@ -371,6 +371,9 @@ export class Reader {
         const box = { w: bw, h: deckH, x: cx - bw / 2, y: 12, lw: mids.length > 1 ? Math.max(70, slotW - 6) : 0 };
         if (k === 'cards') deck = box; else leDeck = box;
       });
+      // Une seule ligne pour les textes sous le cadran, les paquets et la boule.
+      const rowY = 12 + Math.max(oracleOn ? w * topRatio : 0, lunarOn ? w : 0, decksOn ? deckH : 0) + 8;
+      [ball, dial, deck, leDeck].forEach((o) => { if (o) o.labelY = rowY; });
     }
     const { pw, ph, bm, cs } = dims;
     this.ballRest = ball;

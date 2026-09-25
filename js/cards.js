@@ -2,6 +2,7 @@
 // Au clic, une carte est tirée au hasard : elle quitte le paquet, vient au centre et se retourne.
 import { CARD_RATIO, DEFAULT_CARDS } from './config.js';
 import { resolveSrc } from './store.js';
+import { placeLabel } from './oracle.js';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const f = (n) => Math.round(n * 10) / 10;
@@ -235,12 +236,7 @@ export class Cards {
     d.width = rest.w.toFixed(1) + 'px';
     d.height = rest.h.toFixed(1) + 'px';
     this.desk.style.setProperty('--dw', rest.w.toFixed(1) + 'px');
-    this.labelEl.style.width = rest.lw ? rest.lw.toFixed(0) + 'px' : '';
-    // Le texte sous le paquet ne doit jamais sortir de l'écran.
-    const lw = this.labelEl.offsetWidth;
-    const lcx = rest.x + rest.w / 2;
-    const shift = Math.max(6 + lw / 2 - lcx, Math.min(0, vw - 6 - lw / 2 - lcx));
-    this.labelEl.style.setProperty('--lsh', shift.toFixed(1) + 'px');
+    placeLabel(this.labelEl, rest, rest.lw || 154);
 
     // La carte au premier plan, à sa place dans la mise en page.
     const slot = this.slot.getBoundingClientRect();

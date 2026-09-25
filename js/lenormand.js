@@ -4,6 +4,7 @@ import { CARDS, SPREADS, RULES } from './lenormand-data.js';
 import { interpret, esc, pair } from './lenormand-reading.js';
 import { cardArt, lenormandBackURL } from './lenormand-art.js';
 import { resolveSrc } from './store.js';
+import { placeLabel } from './oracle.js';
 import { LENORMAND_RATIO as LE_RATIO, DEFAULT_LENORMAND } from './config.js';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -158,12 +159,8 @@ export class Lenormand {
     d.width = rest.w.toFixed(1) + 'px';
     d.height = rest.h.toFixed(1) + 'px';
     this.desk.style.setProperty('--dw', (rest.h * LE_RATIO).toFixed(1) + 'px');
-    this.labelEl.style.width = rest.lw ? rest.lw.toFixed(0) + 'px' : '';
-    const vw = window.innerWidth;
-    const lw = this.labelEl.offsetWidth;
+    placeLabel(this.labelEl, rest, rest.lw || 154);
     const lcx = rest.x + rest.w / 2;
-    const shift = Math.max(6 + lw / 2 - lcx, Math.min(0, vw - 6 - lw / 2 - lcx));
-    this.labelEl.style.setProperty('--lsh', shift.toFixed(1) + 'px');
     this.root.style.setProperty('--lex', lcx.toFixed(1) + 'px');
     this.root.style.setProperty('--ley', (rest.y + rest.h / 2).toFixed(1) + 'px');
   }

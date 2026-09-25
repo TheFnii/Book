@@ -9,6 +9,10 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// Espaces insécables autour du titre : Safari coupe les paraphes (le grand « L » de Princess Sofia)
+// qui dépassent de la boîte du texte quand il est rempli d'un dégradé.
+const pad = (s) => (s.trim() ? `\u00a0\u00a0${esc(s)}\u00a0\u00a0` : '');
+
 // Étoile scintillante à 4 branches (côtés concaves).
 function sparkle(cx, cy, r) {
   return `M${f(cx)} ${f(cy - r)}Q${f(cx)} ${f(cy)} ${f(cx + r)} ${f(cy)}Q${f(cx)} ${f(cy)} ${f(cx)} ${f(cy + r)}Q${f(cx)} ${f(cy)} ${f(cx - r)} ${f(cy)}Q${f(cx)} ${f(cy)} ${f(cx)} ${f(cy - r)}Z`;
@@ -174,8 +178,8 @@ export function coverSVG({ line1 = '', line2 = '' } = {}) {
     ${moonPhases(1150)}
 
     <g class="cover-title" fill="url(#goldText)" stroke="#2b1609" stroke-width="1.2" paint-order="stroke" text-anchor="middle">
-      <text x="${cx}" y="${cy - 42}" font-size="66" data-max="420" style="font-family:'Princess Sofia',cursive">${esc(line1)}</text>
-      <text x="${cx}" y="${cy + 150}" font-size="175" data-max="430" style="font-family:'Princess Sofia',cursive">${esc(line2)}</text>
+      <text x="${cx}" y="${cy - 42}" font-size="66" data-max="420" style="font-family:'Princess Sofia',cursive">${pad(line1)}</text>
+      <text x="${cx}" y="${cy + 150}" font-size="175" data-max="430" style="font-family:'Princess Sofia',cursive">${pad(line2)}</text>
     </g>
   </g>
 </svg>`;
@@ -191,6 +195,11 @@ export async function fitCoverText(root) {
     t.setAttribute('font-size', base);
     let len = 0;
     try { len = t.getComputedTextLength(); } catch (e) { return; }
+    // On ne mesure que les lettres visibles, sans les espaces de marge.
+    const n = t.textContent.length;
+    if (n > 4 && t.textContent.startsWith('\u00a0\u00a0')) {
+      try { len = t.getSubStringLength(2, n - 4); } catch (e) { /* on garde la longueur totale */ }
+    }
     if (len > max) t.setAttribute('font-size', f((base * max) / len));
   });
 }

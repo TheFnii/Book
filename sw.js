@@ -1,7 +1,7 @@
 // Service worker : le grimoire reste lisible hors ligne.
 // - Fichiers de l'application : réseau d'abord (les mises à jour arrivent tout de suite), cache en secours.
 // - Images des pages : cache d'abord (leur nom change quand leur contenu change).
-const CACHE = 'grimoire-v7';
+const CACHE = 'grimoire-v8';
 const SHELL = [
   './',
   'index.html',

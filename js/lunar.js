@@ -271,7 +271,7 @@ export class LunarCalendar {
     s.left = r.x.toFixed(1) + 'px';
     s.top = r.y.toFixed(1) + 'px';
     s.width = s.height = r.w.toFixed(1) + 'px';
-    placeLabel(this.desk.querySelector('.desk-label'), { x: r.x, w: r.w });
+    placeLabel(this.desk.querySelector('.desk-label'), r);
     const cx = r.x + r.w / 2;
     const cy = r.y + r.w / 2;
     this.root.style.setProperty('--lox', cx.toFixed(1) + 'px');
