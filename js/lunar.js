@@ -3,6 +3,7 @@
 import { DEFAULT_LUNAR } from './config.js';
 import { phasesBetween, moonState, dayPhase, ymdIn, localNoon, lunations, tzOffset, MAJOR } from './moon.js';
 import { drawMoon, litPath } from './moon-draw.js';
+import { placeLabel } from './oracle.js';
 
 const DAY = 86400000;
 const KEYS = ['new', 'first', 'full', 'last'];
@@ -125,10 +126,11 @@ export class LunarCalendar {
 
   build() {
     this.root.insertAdjacentHTML('beforeend', `
-      <button type="button" class="lunar-desk" aria-label="Ouvrir le calendrier lunaire" title="Calendrier lunaire">
+      <button type="button" class="lunar-desk" aria-label="Ouvrir le calendrier lunaire">
         <span class="ld-glow"></span>
         ${dialSVG()}
         <canvas class="ld-moon" aria-hidden="true"></canvas>
+        <span class="desk-label">Calendrier lunaire</span>
       </button>
       <div class="lunar-aura" aria-hidden="true"></div>
       <section class="lunar-ui" aria-hidden="true" aria-label="Calendrier lunaire">
@@ -269,6 +271,7 @@ export class LunarCalendar {
     s.left = r.x.toFixed(1) + 'px';
     s.top = r.y.toFixed(1) + 'px';
     s.width = s.height = r.w.toFixed(1) + 'px';
+    placeLabel(this.desk.querySelector('.desk-label'), { x: r.x, w: r.w });
     const cx = r.x + r.w / 2;
     const cy = r.y + r.w / 2;
     this.root.style.setProperty('--lox', cx.toFixed(1) + 'px');

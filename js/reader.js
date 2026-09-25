@@ -322,8 +322,8 @@ export class Reader {
           // Paquets de cartes : les « Messages » sous le cadran (à gauche), le Lenormand sous la boule (à droite).
           const bottom = stageH - 10 - labelH;
           const cols = [];
-          if (dw >= 50) cols.push({ col: dw, cx: padLeft / 2, top: dial ? dial.y + dial.h + Math.max(18, dw * 0.16) : y });
-          cols.push({ col: w, cx: padRight + strip / 2, top: ball ? ball.y + ball.h + Math.max(14, w * 0.1) : y });
+          if (dw >= 50) cols.push({ col: dw, cx: padLeft / 2, top: dial ? dial.y + dial.h + labelH + 10 : y });
+          cols.push({ col: w, cx: padRight + strip / 2, top: ball ? ball.y + ball.h + labelH + 10 : y });
           // kW : largeur de l'objet / largeur d'une carte (le Lenormand a son livret à côté du paquet).
           const place = (ratio, kW, maxW, pref) => {
             for (const sp of pref === 'right' ? [...cols].reverse() : cols) {

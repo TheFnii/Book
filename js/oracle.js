@@ -9,6 +9,17 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// Texte sous un objet du bureau : un peu plus large que l'objet, jamais hors de l'écran.
+export function placeLabel(el, rest) {
+  if (!el) return;
+  el.style.width = Math.max(rest.w + 16, window.innerWidth >= 700 ? 200 : 96).toFixed(0) + 'px';
+  const lw = el.offsetWidth;
+  const cx = rest.x + rest.w / 2;
+  const vw = window.innerWidth;
+  const shift = Math.max(6 + lw / 2 - cx, Math.min(0, vw - 6 - lw / 2 - cx));
+  el.style.setProperty('--lsh', shift.toFixed(1) + 'px');
+}
+
 // Position de la sphère dans une image (en fraction de sa largeur / hauteur).
 function sphereBox(v) {
   return `left:${pct((v.cx - v.r) / v.w)};top:${pct((v.cy - v.r) / v.h)};width:${pct((2 * v.r) / v.w)};height:${pct((2 * v.r) / v.h)}`;
@@ -34,10 +45,11 @@ export class Oracle {
     this.root.insertAdjacentHTML('beforeend', `
       <div class="oracle-aura" aria-hidden="true"></div>
       <div class="oracle-veil" aria-hidden="true"></div>
-      <div class="oracle-desk" role="button" tabindex="0" aria-label="Boule de cristal : poser une question à ${name}" title="Poser une question à ${name}">
+      <div class="oracle-desk" role="button" tabindex="0" aria-label="Boule de cristal : poser une question à ${name}">
         <div class="od-glow" style="${sphereBox(T)}"></div>
         <img src="${T.src}" alt="" draggable="false">
         <div class="od-mist" style="${sphereBox(T)}"><div class="mist m1"></div><div class="mist m2"></div></div>
+        <span class="desk-label">Poser une question à ${name}</span>
       </div>
       <div class="oracle" aria-hidden="true">
         <div class="oracle-glow" style="${sphereBox(S)}"></div>
@@ -108,6 +120,7 @@ export class Oracle {
     d.top = rest.y.toFixed(1) + 'px';
     d.width = rest.w.toFixed(1) + 'px';
     d.height = rest.h.toFixed(1) + 'px';
+    placeLabel(this.desk.querySelector('.desk-label'), rest);
 
     // La boule au premier plan, à sa place dans la mise en page.
     const slot = this.slot.getBoundingClientRect();
