@@ -100,6 +100,14 @@ Dans l'atelier, l'encadré **Petit Lenormand** permet d'afficher ou masquer le j
 
 ---
 
+## La radio
+
+Une radio des années 1930 est posée en bas à gauche du bureau. Un clic l'allume : le cadran s'éclaire et la playlist Suno « Live Melo » démarre (lecture en continu depuis Suno, rien n'est téléchargé). Un bandeau permet de passer au morceau précédent ou suivant, de mettre en pause, de régler le volume et d'activer ou non le **son d'époque** (bouton « 1930 »). La musique continue pendant la lecture du livre. Un nouveau clic sur la radio l'éteint.
+
+Dans l'atelier, l'encadré **Radio** permet d'afficher ou masquer la radio, de changer son nom et de gérer les morceaux : une ligne par morceau, « Titre | lien Suno ». Les morceaux doivent être publics sur Suno.
+
+---
+
 ## Installer le livre sur un téléphone
 
 - **Android (Chrome)** : ouvrez le lien du livre → menu **⋮** → **Installer l'application** (ou *Ajouter à l'écran d'accueil*).
@@ -129,6 +137,7 @@ Site statique, sans étape de compilation : HTML, CSS et JavaScript (modules ES)
 | `js/fx.js` | Particules dorées |
 | `js/oracle.js` | Boule de voyance |
 | `js/lunar.js`, `js/moon.js`, `js/moon-draw.js` | Calendrier lunaire : cadran, panneau, calcul des phases, dessin de la lune |
+| `js/radio.js`, `css/radio.css` | Radio : lecture en continu de la playlist Suno, son d'époque |
 | `js/cards.js`, `css/cards.css` | Cartes « Messages de l'univers » : paquet, tirage, dos de carte dessiné |
 | `js/lenormand.js`, `css/lenormand.css` | Petit Lenormand : paquet et livret sur le bureau, table de tirage, livret |
 | `js/lenormand-data.js`, `js/lenormand-reading.js`, `js/lenormand-art.js` | Les 36 cartes et leurs sens, les tirages, l'interprétation globale, les dessins |

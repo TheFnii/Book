@@ -1,0 +1,90 @@
+/* ---------- Radio des années 1930 ---------- */
+.radio-desk {
+  position: absolute;
+  z-index: 5;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+  animation: oracleIn 1.4s ease 1.1s both;
+  transition: left 1s cubic-bezier(.45, 0, .2, 1), top 1s cubic-bezier(.45, 0, .2, 1), opacity .45s ease .7s;
+}
+.rd-svg { position: relative; display: block; width: 100%; height: 100%; overflow: visible; }
+.rd-glow {
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  top: 62%;
+  height: 30%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 196, 100, .55), transparent);
+  opacity: 0;
+  transition: opacity .8s ease;
+  pointer-events: none;
+}
+.rd-dial { filter: brightness(.45) saturate(.6); transition: filter .8s ease; }
+.rd-lamp { transition: fill .6s ease; }
+.rd-needle { transform-origin: 100px 186px; transform: rotate(-60deg); transition: transform 1.2s cubic-bezier(.3, 1.3, .5, 1); }
+.reader.radio-on .rd-dial { filter: none; }
+.reader.radio-on .rd-glow { opacity: 1; animation: rdflick 3.5s ease-in-out infinite; }
+.reader.radio-on .rd-lamp { fill: #ff7a3c; }
+.reader.radio-on .rd-needle { transform: rotate(18deg); }
+.reader.radio-playing .radio-desk .rd-svg { animation: rdhum 1.6s ease-in-out infinite; }
+@keyframes rdflick { 0%, 100% { opacity: .85; } 50% { opacity: 1; } 70% { opacity: .75; } }
+@keyframes rdhum { 0%, 100% { transform: none; } 50% { transform: translateY(-.5px); } }
+.radio-desk:hover .rd-dial { filter: brightness(.8); }
+.reader.radio-on .radio-desk:hover .rd-dial { filter: brightness(1.1); }
+.radio-desk:hover .desk-label, .radio-desk:focus-visible .desk-label { opacity: 1; transform: translate(calc(-50% + var(--lsh, 0px)), 0); }
+.radio-desk:focus-visible .rd-svg { outline: 2px solid rgba(246, 227, 168, .85); outline-offset: 3px; border-radius: 40% 40% 6px 6px; }
+.reader.is-opening .radio-desk, .reader.panel-open .radio-desk { pointer-events: none; }
+.reader.oracle-open .radio-desk, .reader.lunar-open .radio-desk, .reader.cards-open .radio-desk, .reader.lenormand-open .radio-desk,
+.reader.oracle-open .radio-bar, .reader.lunar-open .radio-bar, .reader.cards-open .radio-bar, .reader.lenormand-open .radio-bar { opacity: 0; pointer-events: none; transition: opacity .35s; }
+
+/* Bandeau de lecture */
+.radio-bar {
+  position: absolute;
+  z-index: 19;
+  box-sizing: border-box;
+  padding: 8px 10px 7px;
+  border-radius: 14px;
+  border: 1px solid rgba(232, 199, 122, .45);
+  background: linear-gradient(180deg, rgba(60, 30, 14, .94), rgba(28, 14, 7, .94));
+  box-shadow: 0 8px 26px rgba(0, 0, 0, .55);
+  color: #f6e7bd;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  transition: opacity .35s;
+}
+.rb-title { margin: 0 0 5px; font-size: 16px; font-style: italic; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rb-row { display: flex; align-items: center; gap: 4px; }
+.rb-row button {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(232, 199, 122, .3);
+  background: rgba(255, 255, 255, .05);
+  color: inherit;
+  cursor: pointer;
+}
+.rb-row button:hover { background: rgba(232, 199, 122, .18); }
+.rb-row svg { width: 16px; height: 16px; fill: currentColor; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.rb-row [data-r="pause"] svg, .rb-row [data-r="play"] svg { fill: currentColor; }
+.rb-row [data-r="off"] svg { fill: none; }
+.rb-vol { flex: 1; min-width: 40px; accent-color: #e8c77a; }
+.rb-row .rb-vintage { width: auto; padding: 0 7px; border-radius: 10px; font: 600 11px 'Cinzel', serif; letter-spacing: .04em; opacity: .55; }
+.rb-row .rb-vintage.on { opacity: 1; background: rgba(232, 199, 122, .22); border-color: rgba(232, 199, 122, .7); }
+
+@media (prefers-reduced-motion: reduce) {
+  .reader.radio-on .rd-glow, .reader.radio-playing .radio-desk .rd-svg { animation: none; }
+}
+
+/* Téléphone : la consigne sous le livre laisse la place à la radio dans le coin. */
+@media (max-width: 600px) {
+  .reader.has-radio .hint { padding-left: 62px; padding-right: 62px; box-sizing: border-box; }
+}

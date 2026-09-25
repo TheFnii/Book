@@ -7,6 +7,7 @@ import { Oracle } from './oracle.js';
 import { LunarCalendar } from './lunar.js';
 import { Cards } from './cards.js';
 import { Lenormand } from './lenormand.js';
+import { Radio, RADIO_RATIO } from './radio.js';
 import { DESK, BALL, CARD_RATIO, LENORMAND_RATIO } from './config.js';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -161,6 +162,10 @@ export class Reader {
     if (book.lenormand && book.lenormand.enabled) {
       this.lenormand = new Lenormand(this, book.lenormand);
       this.lenormand.layout();
+    }
+    if (book.radio && book.radio.enabled) {
+      this.radio = new Radio(this, book.radio);
+      this.layout();
     }
     this.root.classList.add('ready');
   }
@@ -380,6 +385,25 @@ export class Reader {
     this.dialRest = dial;
     // Livre fermé : les paquets sont posés sur le cuir, de chaque côté du livre.
     // Livre ouvert : la double page occupe le sous-main, ils glissent vers leur place sur le bois.
+    // Radio : posée sur le bois, en bas à gauche.
+    this.radioRest = null;
+    if (this.book && this.book.radio && this.book.radio.enabled) {
+      const P2 = DESK.pad;
+      const padL = ix + P2.x * H * R;
+      const strip = Math.max(0, padL);
+      if (strip >= 80) {
+        let rw = Math.min(strip * 0.66, 120);
+        let rh = rw / RADIO_RATIO;
+        const maxH = stageH * 0.22;
+        if (rh > maxH) { rh = maxH; rw = rh * RADIO_RATIO; }
+        this.radioRest = { w: rw, h: rh, x: strip / 2 - rw / 2, y: stageH - rh - labelH - 8 };
+      } else {
+        // Téléphone : petite radio dans le coin, sous le livre.
+        const rw = Math.min(Math.max(vw * 0.12, 40), 64);
+        const rh = rw / RADIO_RATIO;
+        this.radioRest = { w: rw, h: rh, x: 10, y: stageH - rh - 24 };
+      }
+    }
     this.deckOpenRest = deck;
     this.leOpenRest = leDeck;
     const onPad = this.padDecks({ H, ix, iy, hx, hy, stageW, stageH, dims, cardsOn, leOn, labelH });
@@ -411,6 +435,7 @@ export class Reader {
     if (this.lunar) this.lunar.layout();
     if (this.cards) this.cards.layout();
     if (this.lenormand) this.lenormand.layout();
+    if (this.radio) this.radio.layout();
   }
 
   padDecks({ H, ix, iy, hx, hy, stageW, stageH, dims, cardsOn, leOn, labelH }) {
@@ -459,6 +484,7 @@ export class Reader {
     this.applyDeckRests();
     if (this.cards) this.cards.layout();
     if (this.lenormand) this.lenormand.layout();
+    if (this.radio) this.radio.layout();
   }
 
   onResize() {

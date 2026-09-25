@@ -157,6 +157,180 @@
     "back": null,
     "images": {}
   },
+  "radio": {
+    "enabled": true,
+    "label": "Radio",
+    "tracks": [
+      {
+        "title": "Souvenirs",
+        "id": "5bcf0369-368f-4da4-b145-dbbeee7d2a84"
+      },
+      {
+        "title": "Promesse",
+        "id": "b8a7d70d-e07a-4673-9d9f-0b5900f63c06"
+      },
+      {
+        "title": "Lumière du jour",
+        "id": "4fcac677-d6b7-4059-9555-29e090063531"
+      },
+      {
+        "title": "Derrière ton regard",
+        "id": "df18042e-0ea8-4d78-ac76-b4b43eb84123"
+      },
+      {
+        "title": "Lune de miel",
+        "id": "d512a1c3-bad7-403b-a203-fa272c3225f4"
+      },
+      {
+        "title": "Nuit",
+        "id": "2fae083e-ae58-4e79-b30b-9ad10c5f2fb4"
+      },
+      {
+        "title": "Lueur d’étoile",
+        "id": "67a1ea18-cece-4a6e-af48-a1f6b4faa25d"
+      },
+      {
+        "title": "Des rêves qui brûlent encore",
+        "id": "1ad4e739-2770-4180-a2b5-29ef654a8a06"
+      },
+      {
+        "title": "D’or et de miel",
+        "id": "db531716-b89e-4412-8fdf-56ac52bc1818"
+      },
+      {
+        "title": "Lucioles",
+        "id": "bbca1511-ee6e-448a-88ea-e1815488fd38"
+      },
+      {
+        "title": "Nostalgia",
+        "id": "fed395e2-14cc-4c18-b82e-b01bf52179bc"
+      },
+      {
+        "title": "Reverie",
+        "id": "2189465e-0ff4-40ab-824f-d05faff18ed2"
+      },
+      {
+        "title": "La rose",
+        "id": "71938488-0bc9-491e-8149-c7aea930dac7"
+      },
+      {
+        "title": "Introspection",
+        "id": "34c2462b-4859-489c-b1ce-941a98f639ef"
+      },
+      {
+        "title": "Dans tes sourires",
+        "id": "197c9826-08c0-49bf-8028-d0d9005549b1"
+      },
+      {
+        "title": "Traversée",
+        "id": "468ce005-3114-4ff6-aeca-ae44ec64561b"
+      },
+      {
+        "title": "Crépuscule",
+        "id": "6b1c5bc7-9303-4849-91c9-1e08860aa5fc"
+      },
+      {
+        "title": "Lune d’argent",
+        "id": "d04a9671-f6d6-46d2-a570-c58aa4bc766c"
+      },
+      {
+        "title": "Avenir",
+        "id": "e855d60f-d530-4987-92fe-869bef0859f7"
+      },
+      {
+        "title": "Fleurs sauvages",
+        "id": "fd1e5298-7bfd-4655-a95d-20385ea942df"
+      },
+      {
+        "title": "Libre",
+        "id": "4bb9eea4-79a1-4bd3-9848-443073ec19cf"
+      },
+      {
+        "title": "Vent du soir",
+        "id": "76954ff5-51e9-4568-88dd-3ad83ffc5d09"
+      },
+      {
+        "title": "Fleur des sables",
+        "id": "c67d566c-ad6e-415b-b9d9-d038c6a94cff"
+      },
+      {
+        "title": "Emeraude",
+        "id": "884288dc-d368-41fb-b1f6-42d1ba719235"
+      },
+      {
+        "title": "Rubis",
+        "id": "189bb517-6da0-4e25-88a9-5e7197bb4450"
+      },
+      {
+        "title": "Éternité",
+        "id": "422a6310-28d8-4eb3-82a6-c4c0c46cbbef"
+      },
+      {
+        "title": "L’envol",
+        "id": "4f1b6950-c90b-4da0-b7d4-572f109f3f24"
+      },
+      {
+        "title": "Poursuite",
+        "id": "fd2979d8-c07d-418e-8971-928fc4667cf7"
+      },
+      {
+        "title": "Confidence",
+        "id": "96be6fee-1305-4866-85ef-6fbb8d88da48"
+      },
+      {
+        "title": "Si tu l’oses",
+        "id": "9622f4f5-cd82-4ff8-9ae0-f95f896421d8"
+      },
+      {
+        "title": "Sous les étoiles",
+        "id": "8f454084-e760-4a85-9f7c-0892ab97bc59"
+      },
+      {
+        "title": "AVoyageur",
+        "id": "e437f487-9bfa-4480-8f33-329d4ce7eb30"
+      },
+      {
+        "title": "Étincelle",
+        "id": "77dc27d4-e036-4c9a-9d00-d63aa1637f1a"
+      },
+      {
+        "title": "Le corbeau",
+        "id": "a223bcc3-7fab-4b0d-82ae-204c899f00de"
+      },
+      {
+        "title": "Barista",
+        "id": "0bfb9db0-5de6-497c-9391-9879f76b0baf"
+      },
+      {
+        "title": "Le renard",
+        "id": "34e3ea4d-6ba7-476e-be3d-640cc4e1ab82"
+      },
+      {
+        "title": "Promenade",
+        "id": "67ea0ec3-0da9-4e4f-bfa1-9dc6d8f3533b"
+      },
+      {
+        "title": "Adoration",
+        "id": "68e77e69-b319-4542-8798-e9da37748d59"
+      },
+      {
+        "title": "Les pissenlits",
+        "id": "068c9df0-02f0-40ae-a230-11086f0b3b16"
+      },
+      {
+        "title": "Coquelicot",
+        "id": "ce93f180-4be0-4a91-b4b9-78b6c23b5384"
+      },
+      {
+        "title": "Brise d’été",
+        "id": "a38122d3-0d48-4149-82a2-7065456ed26f"
+      },
+      {
+        "title": "ALike hell",
+        "id": "a885c406-de6c-4938-9455-0608d658355e"
+      }
+    ]
+  },
   "pageRatio": 0.707,
   "pages": [
     {

@@ -221,6 +221,8 @@ a { color: var(--gold-light); }
 .cards-box .help { margin-top: 8px; }
 #cards-messages { min-height: 260px; }
 .le-box h2 { color: #e9a3a0; }
+.radio-box h2 { color: #e8b27a; }
+#radio-tracks { font-size: 14px; white-space: pre; overflow-x: auto; }
 .le-back-preview { aspect-ratio: 5 / 8; background: #561522; }
 .le-imgs { margin-top: 4px; border-radius: 10px; border: 1px solid var(--line); background: rgba(0, 0, 0, .18); }
 .le-imgs summary { padding: 10px 12px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: .04em; color: var(--gold-light); }

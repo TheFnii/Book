@@ -109,7 +109,28 @@ function render() {
   renderLunar();
   renderCards();
   renderLenormand();
+  renderRadio();
   renderPages();
+}
+
+// Radio : « Titre | lien Suno » par ligne.
+const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+const tracksToText = (ts) => ts.map((t) => `${t.title} | https://suno.com/song/${t.id}`).join('\n');
+function parseTracks(v) {
+  return v.split('\n').map((l) => {
+    const m = l.match(UUID);
+    if (!m) return null;
+    const title = (l.includes('|') ? l.split('|')[0] : l.replace(/https?:\/\/\S+/g, '')).trim();
+    return { title, id: m[0].toLowerCase() };
+  }).filter(Boolean);
+}
+function renderRadio() {
+  const r = state.book.radio;
+  $('#radio-on').checked = r.enabled;
+  $('#radio-fields').hidden = !r.enabled;
+  if (document.activeElement !== $('#radio-label')) $('#radio-label').value = r.label;
+  if (document.activeElement !== $('#radio-tracks')) $('#radio-tracks').value = tracksToText(r.tracks);
+  $('#radio-count').textContent = `(${r.tracks.length})`;
 }
 
 // Petit Lenormand : dos et dessins des 36 cartes.
@@ -820,6 +841,19 @@ function bindUI() {
     } catch (e) { toast(e.message); } finally { busy(false); }
   });
   $('#cards-back-rm').onclick = () => mutate(() => { state.book.cards.back = null; });
+  $('#radio-on').onchange = (e) => mutate(() => { state.book.radio.enabled = e.target.checked; });
+  let radioHist = false;
+  [['radio-label', 'label'], ['radio-tracks', 'tracks']].forEach(([id, key]) => {
+    const input = $('#' + id);
+    input.addEventListener('input', () => {
+      if (!radioHist) { pushHistory(); radioHist = true; }
+      state.book.radio[key] = key === 'tracks' ? parseTracks(input.value) : input.value;
+      saveDraft();
+      renderStatus();
+      renderRadio();
+    });
+    input.addEventListener('blur', () => { radioHist = false; });
+  });
   $('#le-on').onchange = (e) => mutate(() => { state.book.lenormand.enabled = e.target.checked; });
   let leHist = false;
   $('#le-label').addEventListener('input', () => {
