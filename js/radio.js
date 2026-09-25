@@ -1,4 +1,5 @@
-// Radio des années 1930 posée sur le bureau : lit la playlist Suno en continu (streaming).
+// Radio des années 1930 posée sur le bureau : lit la playlist Suno en continu (streaming de la
+// version vidéo publique de chaque morceau, dont seule la piste audio est jouée).
 // Clic sur la radio : allumer / éteindre. Un petit bandeau propose précédent, pause, suivant et volume.
 // « Son d'époque » : filtre de vieux haut-parleur et léger grésillement (Web Audio).
 import { DEFAULT_RADIO, SUNO_AUDIO } from './config.js';
