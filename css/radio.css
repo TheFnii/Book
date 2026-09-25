@@ -76,7 +76,12 @@
 .rb-row svg { width: 16px; height: 16px; fill: currentColor; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .rb-row [data-r="pause"] svg, .rb-row [data-r="play"] svg { fill: currentColor; }
 .rb-row [data-r="off"] svg { fill: none; }
-.rb-vol { flex: 1; min-width: 40px; accent-color: #e8c77a; }
+.rb-volbox { flex: 1; min-width: 0; display: flex; align-items: center; gap: 3px; margin: 0 2px; }
+.rb-row .rb-volicon { flex: none; width: 18px; height: 18px; opacity: .85; }
+.rb-volicon .w1, .rb-volicon .w2, .rb-volicon .mx { fill: none; }
+.rb-volicon .mx, .rb-volbox[data-level="0"] .w1, .rb-volbox[data-level="0"] .w2, .rb-volbox[data-level="1"] .w2 { display: none; }
+.rb-volbox[data-level="0"] .mx { display: inline; }
+.rb-vol { flex: 1; min-width: 32px; width: 100%; accent-color: #e8c77a; cursor: pointer; }
 .rb-row .rb-vintage { width: auto; padding: 0 7px; border-radius: 10px; font: 600 11px 'Cinzel', serif; letter-spacing: .04em; opacity: .55; }
 .rb-row .rb-vintage.on { opacity: 1; background: rgba(232, 199, 122, .22); border-color: rgba(232, 199, 122, .7); }
 

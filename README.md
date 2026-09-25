@@ -102,7 +102,7 @@ Dans l'atelier, l'encadré **Petit Lenormand** permet d'afficher ou masquer le j
 
 ## La radio
 
-Une radio des années 1930 est posée en bas à gauche du bureau. Un clic l'allume : le cadran s'éclaire et la playlist Suno « Live Melo » démarre (lecture en continu depuis Suno, rien n'est téléchargé dans le site : la radio lit au fil de l'écoute la version vidéo publique de chaque morceau, car Suno ne fournit plus de MP3 et chiffre ses autres flux ; les morceaux doivent donc être **publics** sur Suno). Les morceaux s'enchaînent tout seuls. Un bandeau permet de passer au morceau précédent ou suivant, de mettre en pause, de régler le volume et d'activer ou non le **son d'époque** (bouton « 1930 »). La musique continue pendant la lecture du livre. Un nouveau clic sur la radio l'éteint.
+Une radio des années 1930 est posée en bas à gauche du bureau. Un clic l'allume : le cadran s'éclaire et la playlist Suno « Live Melo » démarre (lecture en continu depuis Suno, rien n'est téléchargé dans le site : la radio lit au fil de l'écoute la version vidéo publique de chaque morceau, car Suno ne fournit plus de MP3 et chiffre ses autres flux ; les morceaux doivent donc être **publics** sur Suno). Les morceaux s'enchaînent tout seuls. Un bandeau permet de passer au morceau précédent ou suivant, de mettre en pause, de régler le volume (curseur jaune, précédé d'un haut-parleur) et d'activer ou non le **son d'époque** (bouton « 1930 »). La musique continue pendant la lecture du livre. Un nouveau clic sur la radio l'éteint.
 
 Dans l'atelier, l'encadré **Radio** permet d'afficher ou masquer la radio, de changer son nom et de gérer les morceaux : une ligne par morceau, « Titre | lien Suno ». Les morceaux doivent être publics sur Suno.
 

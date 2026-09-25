@@ -99,7 +99,10 @@ export class Radio {
           <button type="button" data-r="prev" aria-label="Morceau précédent">${IC.prev}</button>
           <button type="button" data-r="play" aria-label="Lecture ou pause">${IC.pause}</button>
           <button type="button" data-r="next" aria-label="Morceau suivant">${IC.next}</button>
-          <input type="range" class="rb-vol" min="0" max="1" step="0.05" aria-label="Volume">
+          <span class="rb-volbox" title="Volume">
+            <svg class="rb-volicon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5h4l5-4.5v14l-5-4.5H3z"/><path class="w1" d="M15.5 9.5a3.5 3.5 0 010 5"/><path class="w2" d="M18 7a7 7 0 010 10"/><path class="mx" d="M16 9.5l5 5M21 9.5l-5 5"/></svg>
+            <input type="range" class="rb-vol" min="0" max="1" step="0.05" aria-label="Volume">
+          </span>
           <button type="button" data-r="vintage" class="rb-vintage" title="Son d’époque" aria-label="Son d’époque">1930</button>
           <button type="button" data-r="off" aria-label="Éteindre la radio">${IC.power}</button>
         </div>
@@ -110,7 +113,9 @@ export class Radio {
     this.titleEl = this.bar.querySelector('.rb-title');
     this.playBtn = this.bar.querySelector('[data-r="play"]');
     this.vol = this.bar.querySelector('.rb-vol');
+    this.volBox = this.bar.querySelector('.rb-volbox');
     this.vol.value = this.volume;
+    this.volIcon();
     this.bar.querySelector('.rb-vintage').classList.toggle('on', this.vintage);
 
     // Deux lecteurs : l'un passe par le filtre « son d'époque » (il faut que Suno l'autorise),
@@ -133,7 +138,7 @@ export class Radio {
     });
 
     this.desk.addEventListener('click', () => (this.on ? this.powerOff() : this.powerOn()));
-    this.vol.addEventListener('input', () => { this.volume = Number(this.vol.value); this.applyVolume(); this.save(); });
+    this.vol.addEventListener('input', () => { this.volume = Number(this.vol.value); this.volIcon(); this.applyVolume(); this.save(); });
     this.bar.addEventListener('click', (e) => {
       const b = e.target.closest('[data-r]');
       if (!b) return;
@@ -168,7 +173,7 @@ export class Radio {
     s.height = r.h.toFixed(1) + 'px';
     placeLabel(this.desk.querySelector('.desk-label'), r);
     // Le bandeau se place au-dessus de la radio, sans sortir de l'écran.
-    const bw = Math.min(290, window.innerWidth - 16);
+    const bw = Math.min(320, window.innerWidth - 16);
     const b = this.bar.style;
     b.width = bw + 'px';
     b.left = Math.max(8, Math.min(window.innerWidth - bw - 8, r.x + r.w / 2 - bw / 2)).toFixed(1) + 'px';
@@ -218,6 +223,12 @@ export class Radio {
     this.fxOut.disconnect();
     if (this.vintage) { this.src.connect(this.fxIn); this.fxOut.connect(this.out); } else this.src.connect(this.out);
     this.applyVolume();
+  }
+
+  // Le haut-parleur devant le curseur montre le niveau (coupé, bas, fort).
+  volIcon() {
+    const v = this.volume;
+    this.volBox.dataset.level = v <= 0 ? '0' : v < 0.5 ? '1' : '2';
   }
 
   applyVolume() {
