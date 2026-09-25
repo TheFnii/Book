@@ -375,8 +375,14 @@ export class Reader {
     const { pw, ph, bm, cs } = dims;
     this.ballRest = ball;
     this.dialRest = dial;
-    this.deckRest = deck;
-    this.leRest = leDeck;
+    // Livre fermé : les paquets sont posés sur le cuir, de chaque côté du livre.
+    // Livre ouvert : la double page occupe le sous-main, ils glissent vers leur place sur le bois.
+    this.deckOpenRest = deck;
+    this.leOpenRest = leDeck;
+    const onPad = this.padDecks({ H, ix, iy, hx, hy, stageW, stageH, dims, cardsOn, leOn, labelH });
+    this.deckClosedRest = onPad.deck || deck;
+    this.leClosedRest = onPad.le || leDeck;
+    this.applyDeckRests();
 
     const desk = this.q('.desk');
     if (!this.book || !this.book.background) {
@@ -400,6 +406,54 @@ export class Reader {
     this.updateStacks();
     if (this.oracle) this.oracle.layout();
     if (this.lunar) this.lunar.layout();
+    if (this.cards) this.cards.layout();
+    if (this.lenormand) this.lenormand.layout();
+  }
+
+  padDecks({ H, ix, iy, hx, hy, stageW, stageH, dims, cardsOn, leOn, labelH }) {
+    const out = {};
+    const P = DESK.pad;
+    const R = DESK.ratio;
+    const padL = Math.max(0, ix + P.x * H * R);
+    const padR = Math.min(stageW, ix + (P.x + P.w) * H * R);
+    const padT = Math.max(0, iy + P.y * H);
+    const padB = Math.min(stageH, iy + (P.y + P.h) * H);
+    const coverW = dims.coverW * dims.cs;
+    const coverH = dims.coverH * dims.cs;
+    const bookL = hx - coverW / 2;
+    const bookR = hx + coverW / 2;
+    const cy = Math.min(Math.max(hy, padT + 60), padB - 60);
+    const fit = (space, ratio, kW, maxW) => {
+      let cw = Math.min((space * 0.56) / kW, maxW, (coverH * 0.34) * ratio);
+      const ch = Math.min(cw / ratio, padB - padT - labelH - 16);
+      cw = ch * ratio;
+      return cw >= 40 ? { cw, ch } : null;
+    };
+    const spaceL = bookL - padL;
+    const spaceR = padR - bookR;
+    const fc = cardsOn ? fit(spaceL, CARD_RATIO, 1, 130) : null;
+    const fl = leOn ? fit(spaceR, LENORMAND_RATIO, 1.45, 120) : null;
+    // Même hauteur pour les deux paquets : le bureau reste symétrique.
+    const ch = Math.min(fc ? fc.ch : Infinity, fl ? fl.ch : Infinity);
+    if (fc) {
+      const cw = ch * CARD_RATIO;
+      out.deck = { w: cw, h: ch, x: padL + spaceL / 2 - cw / 2, y: cy - (ch + labelH) / 2, lw: Math.min(spaceL - 10, 160) };
+    }
+    if (fl) {
+      const bw = ch * LENORMAND_RATIO * 1.45;
+      out.le = { w: bw, h: ch, x: bookR + spaceR / 2 - bw / 2, y: cy - (ch + labelH) / 2, lw: Math.min(spaceR - 10, 160) };
+    }
+    return out;
+  }
+
+  applyDeckRests() {
+    this.deckRest = this.deskOpen ? this.deckOpenRest : this.deckClosedRest;
+    this.leRest = this.deskOpen ? this.leOpenRest : this.leClosedRest;
+  }
+
+  moveDecks(open) {
+    this.deskOpen = open;
+    this.applyDeckRests();
     if (this.cards) this.cards.layout();
     if (this.lenormand) this.lenormand.layout();
   }
@@ -468,6 +522,7 @@ export class Reader {
 
     this.sound.cover();
     this.bookEl.classList.add('cover-open');
+    this.moveDecks(true);
     if (this.oracle) this.oracle.layout();
 
     const st = this.q('.stage').getBoundingClientRect();
@@ -507,6 +562,7 @@ export class Reader {
     this.bookEl.classList.remove('cover-open');
     await sleep(1650);
     this.bookEl.classList.remove('awake');
+    this.moveDecks(false);
     const rect = this.coverEl.getBoundingClientRect();
     this.fx.edges(rect, { count: 40, speed: 60, life: 1.4 });
     this.fx.setAmbient(38);

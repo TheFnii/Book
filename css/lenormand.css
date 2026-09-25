@@ -12,7 +12,8 @@
   font: inherit;
   -webkit-tap-highlight-color: transparent;
   animation: oracleIn 1.4s ease .9s both;
-  transition: opacity .45s ease .7s, filter 1s ease;
+  transition: left 1s cubic-bezier(.45, 0, .2, 1), top 1s cubic-bezier(.45, 0, .2, 1), width 1s cubic-bezier(.45, 0, .2, 1), height 1s cubic-bezier(.45, 0, .2, 1),
+    --dw 1s cubic-bezier(.45, 0, .2, 1), opacity .45s ease .7s, filter 1s ease;
 }
 .led-stack { position: absolute; left: 0; top: 0; width: var(--dw, 60px); height: 100%; transform: rotate(6deg); }
 .led-card { position: absolute; inset: 0; border-radius: calc(var(--dw, 60px) * .07); overflow: hidden; background: #561522; }

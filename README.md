@@ -76,7 +76,7 @@ Dans l'atelier, l'encadré **Calendrier lunaire** permet d'afficher ou masquer l
 
 ## Les cartes « Messages de l'univers »
 
-Un paquet de cartes est posé sur le bureau, sous le cadran lunaire (en haut au centre sur téléphone). Au survol de la souris, le texte « Messages de l'univers » apparaît dessous ; sur les écrans tactiles, il reste affiché. Un toucher tire une carte au hasard : elle quitte le paquet, vient au centre et se retourne pour révéler son message. **Tirer une autre carte** en propose une nouvelle ; on ne retombe sur une carte qu'après avoir vu toutes les autres.
+Un paquet de cartes est posé sur le cuir, à gauche du livre. Quand le livre est ouvert, il glisse sur le bois, sous le cadran lunaire (sur un petit téléphone, il reste en haut de l'écran). Au survol de la souris, le texte « Messages de l'univers » apparaît dessous ; sur les écrans tactiles, il reste affiché. Un toucher tire une carte au hasard : elle quitte le paquet, vient au centre et se retourne pour révéler son message. **Tirer une autre carte** en propose une nouvelle ; on ne retombe sur une carte qu'après avoir vu toutes les autres.
 
 Dans l'atelier, l'encadré **Cartes « Messages de l'univers »** permet de :
 - afficher ou masquer le paquet ;
@@ -88,7 +88,7 @@ Dans l'atelier, l'encadré **Cartes « Messages de l'univers »** permet de :
 
 ## Le Petit Lenormand
 
-Un second paquet, bordeaux, est posé sur le bureau sous la boule de cristal, avec son petit livret à côté. Au survol, « Petit Lenormand » s'affiche dessous. Un toucher ouvre la table de tirage (toucher le livret l'ouvre directement sur les règles).
+Un second paquet, bordeaux, est posé sur le cuir à droite du livre, avec son petit livret à côté. Quand le livre est ouvert, il glisse sur le bois, sous la boule de cristal. Au survol, « Petit Lenormand » s'affiche dessous. Un toucher ouvre la table de tirage (toucher le livret l'ouvre directement sur les règles).
 
 - **Cinq tirages** : carte du jour, trois cartes, ligne de cinq, la croix, carré de neuf. On peut écrire sa question (facultatif).
 - **Mélanger et tirer** : les cartes sont distribuées puis se retournent une à une. Leur signification s'affiche **à côté** (en dessous sur téléphone), position par position, et une **interprétation du tirage** relie les cartes entre elles : ambiance générale, thème dominant, lecture en paires (la première carte est le sujet, la suivante la nuance), points d'attention et conseil pour la suite.

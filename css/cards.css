@@ -12,8 +12,11 @@
   font: inherit;
   -webkit-tap-highlight-color: transparent;
   animation: oracleIn 1.4s ease .7s both;
-  transition: opacity .45s ease .7s, filter 1s ease;
+  transition: left 1s cubic-bezier(.45, 0, .2, 1), top 1s cubic-bezier(.45, 0, .2, 1), width 1s cubic-bezier(.45, 0, .2, 1), height 1s cubic-bezier(.45, 0, .2, 1),
+    --dw 1s cubic-bezier(.45, 0, .2, 1), opacity .45s ease .7s, filter 1s ease;
 }
+/* Taille animable : les paquets glissent en douceur quand le livre s'ouvre ou se ferme. */
+@property --dw { syntax: '<length>'; inherits: true; initial-value: 80px; }
 .cdk-deck { position: absolute; inset: 0; transform: rotate(-7deg); }
 .cdk-card {
   position: absolute;
