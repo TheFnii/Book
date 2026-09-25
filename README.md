@@ -86,6 +86,20 @@ Dans l'atelier, l'encadré **Cartes « Messages de l'univers »** permet de :
 
 ---
 
+## Le Petit Lenormand
+
+Un second paquet, bordeaux, est posé sur le bureau sous la boule de cristal, avec son petit livret à côté. Au survol, « Petit Lenormand » s'affiche dessous. Un toucher ouvre la table de tirage (toucher le livret l'ouvre directement sur les règles).
+
+- **Cinq tirages** : carte du jour, trois cartes, ligne de cinq, la croix, carré de neuf. On peut écrire sa question (facultatif).
+- **Mélanger et tirer** : les cartes sont distribuées puis se retournent une à une. Leur signification s'affiche **à côté** (en dessous sur téléphone), position par position, et une **interprétation du tirage** relie les cartes entre elles : ambiance générale, thème dominant, lecture en paires (la première carte est le sujet, la suivante la nuance), points d'attention et conseil pour la suite.
+- **Le livret** (bouton en haut à droite) : les règles du jeu, le détail des tirages et les 36 cartes avec leur sens, en amour, au travail, et leur conseil.
+
+Les significations suivent le sens traditionnel du Lenormand, formulé avec des mots propres au grimoire. Les dessins, simples, sont faits pour le livre.
+
+Dans l'atelier, l'encadré **Petit Lenormand** permet d'afficher ou masquer le jeu, de changer le texte au survol, de remplacer le **dos** des cartes et chacun des **36 dessins** par votre propre image (la carte entière, format portrait 5 × 8, par exemple 1000 × 1600 px). ✕ remet le dessin d'origine.
+
+---
+
 ## Installer le livre sur un téléphone
 
 - **Android (Chrome)** : ouvrez le lien du livre → menu **⋮** → **Installer l'application** (ou *Ajouter à l'écran d'accueil*).
@@ -116,11 +130,13 @@ Site statique, sans étape de compilation : HTML, CSS et JavaScript (modules ES)
 | `js/oracle.js` | Boule de voyance |
 | `js/lunar.js`, `js/moon.js`, `js/moon-draw.js` | Calendrier lunaire : cadran, panneau, calcul des phases, dessin de la lune |
 | `js/cards.js`, `css/cards.css` | Cartes « Messages de l'univers » : paquet, tirage, dos de carte dessiné |
+| `js/lenormand.js`, `css/lenormand.css` | Petit Lenormand : paquet et livret sur le bureau, table de tirage, livret |
+| `js/lenormand-data.js`, `js/lenormand-reading.js`, `js/lenormand-art.js` | Les 36 cartes et leurs sens, les tirages, l'interprétation globale, les dessins |
 | `js/sound.js` | Sons générés en direct (Web Audio, sans fichier audio) |
 | `editeur.html`, `js/editor.js` | Atelier |
 | `js/github.js` | Publication : un seul commit par publication, via l'API Git de GitHub |
 | `js/images.js`, `js/store.js` | Préparation des images, brouillon local (IndexedDB) |
-| `book.json` | Contenu du livre (pages, couverture, boule, calendrier, cartes) |
+| `book.json` | Contenu du livre (pages, couverture, boule, calendrier, cartes, Lenormand) |
 | `pages/`, `assets/` | Images (nommées d'après leur contenu) |
 | `sw.js`, `manifest.webmanifest` | Application installable et lecture hors ligne |
 

@@ -118,3 +118,7 @@ export const DEFAULT_CARDS = {
     "Toutes les pièces du puzzle finissent par trouver leur place naturelle. Prendre la mesure de la sagesse acquise permet de se tenir au centre de sa vie, le cœur serein et prêt à accueillir l’inconnu.",
   ],
 };
+
+// Petit Lenormand : proportions des cartes et réglages par défaut (dos et dessins remplaçables dans l'atelier).
+export const LENORMAND_RATIO = 5 / 8;
+export const DEFAULT_LENORMAND = { enabled: true, label: 'Petit Lenormand' };

@@ -6,7 +6,8 @@ import { Sound } from './sound.js';
 import { Oracle } from './oracle.js';
 import { LunarCalendar } from './lunar.js';
 import { Cards } from './cards.js';
-import { DESK, BALL, CARD_RATIO } from './config.js';
+import { Lenormand } from './lenormand.js';
+import { DESK, BALL, CARD_RATIO, LENORMAND_RATIO } from './config.js';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -157,6 +158,10 @@ export class Reader {
       this.cards = new Cards(this, book.cards);
       this.cards.layout();
     }
+    if (book.lenormand && book.lenormand.enabled) {
+      this.lenormand = new Lenormand(this, book.lenormand);
+      this.lenormand.layout();
+    }
     this.root.classList.add('ready');
   }
 
@@ -257,7 +262,8 @@ export class Reader {
     const oracleOn = !!(this.book && this.book.oracle && this.book.oracle.enabled);
     const lunarOn = !!(this.book && this.book.lunar && this.book.lunar.enabled);
     const cardsOn = !!(this.book && this.book.cards && this.book.cards.enabled);
-    const objectsOn = oracleOn || lunarOn || cardsOn;
+    const leOn = !!(this.book && this.book.lenormand && this.book.lenormand.enabled);
+    const objectsOn = oracleOn || lunarOn || cardsOn || leOn;
     const labelH = 44; // place du texte sous le paquet de cartes
     const P = DESK.pad;
     const R = DESK.ratio;
@@ -272,6 +278,7 @@ export class Reader {
     let ball = null;
     let dial = null;
     let deck = null;
+    let leDeck = null;
     let dims;
     const size = (pw) => {
       const ph = pw / r;
@@ -312,29 +319,38 @@ export class Reader {
           const dw = Math.min(w, padLeft * 0.82);
           if (lunarOn && dw >= 50) dial = { w: dw, h: dw, x: (padLeft - dw) / 2, y };
           if (lunarOn && !dial) ball = null;
-          // Paquet de cartes : sous le cadran (à gauche), sinon sous la boule (à droite).
-          if (cardsOn) {
-            const bottom = stageH - 10 - labelH;
-            const spots = [];
-            if (dw >= 50) spots.push({ col: dw, cx: padLeft / 2, top: dial ? dial.y + dial.h + Math.max(18, dw * 0.16) : y });
-            spots.push({ col: w, cx: padRight + strip / 2, top: ball ? ball.y + ball.h + Math.max(14, w * 0.1) : y });
-            for (const sp of spots) {
-              let cw = Math.min(sp.col * 0.58, 130);
-              let ch = cw / CARD_RATIO;
-              if (sp.top + ch > bottom) { ch = bottom - sp.top; cw = ch * CARD_RATIO; }
-              if (cw >= 36) { deck = { w: cw, h: ch, x: sp.cx - cw / 2, y: sp.top }; break; }
+          // Paquets de cartes : les « Messages » sous le cadran (à gauche), le Lenormand sous la boule (à droite).
+          const bottom = stageH - 10 - labelH;
+          const cols = [];
+          if (dw >= 50) cols.push({ col: dw, cx: padLeft / 2, top: dial ? dial.y + dial.h + Math.max(18, dw * 0.16) : y });
+          cols.push({ col: w, cx: padRight + strip / 2, top: ball ? ball.y + ball.h + Math.max(14, w * 0.1) : y });
+          // kW : largeur de l'objet / largeur d'une carte (le Lenormand a son livret à côté du paquet).
+          const place = (ratio, kW, maxW, pref) => {
+            for (const sp of pref === 'right' ? [...cols].reverse() : cols) {
+              let cw = Math.min((sp.col * 0.58) / kW, maxW);
+              let ch = cw / ratio;
+              if (sp.top + ch > bottom) { ch = bottom - sp.top; cw = ch * ratio; }
+              if (cw >= 34) {
+                const box = { w: cw * kW, h: ch, x: sp.cx - (cw * kW) / 2, y: sp.top };
+                sp.top += ch + labelH + Math.max(16, sp.col * 0.12);
+                return box;
+              }
             }
-          }
+            return null;
+          };
+          if (cardsOn) deck = place(CARD_RATIO, 1, 130, 'left');
+          if (leOn) leDeck = place(LENORMAND_RATIO, 1.45, 96, 'right');
         }
       }
     }
-    if (H === undefined || (oracleOn && !ball) || (lunarOn && !dial) || (cardsOn && !deck)) {
+    if (H === undefined || (oracleOn && !ball) || (lunarOn && !dial) || (cardsOn && !deck) || (leOn && !leDeck)) {
       // Écran étroit : boule en haut, sous-main et livre juste en dessous.
       dims = size(pwMax);
       const w = objectsOn ? Math.min(Math.max(Math.min(vw, vh) * 0.2, 64), 190) : 0;
       const objH = oracleOn ? w * topRatio : w;
-      const deckH = cardsOn ? Math.max(objH * 0.72, 56) : 0;
-      const band = objectsOn ? Math.max(oracleOn || lunarOn ? objH + 24 : 0, cardsOn ? 12 + deckH + labelH : 0) : 0;
+      const decksOn = cardsOn || leOn;
+      const deckH = decksOn ? Math.max(objH * 0.72, 56) : 0;
+      const band = objectsOn ? Math.max(oracleOn || lunarOn ? objH + 24 : 0, decksOn ? 12 + deckH + labelH : 0) : 0;
       H = Math.max(vh, vw / R, band / P.y, (dims.spreadW * 1.07) / (P.w * R));
       iy = Math.min(0, Math.max(band - P.y * H, vh - H));
       ix = hx - pcx * H * R;
@@ -344,12 +360,23 @@ export class Reader {
       dims.cs = Math.min(dims.cs, ((padBottom - padTop) * 0.9) / dims.coverH);
       if (oracleOn) ball = { w, h: w * topRatio, x: stageW - w - 12, y: 12 };
       if (lunarOn) dial = { w, h: w, x: 12, y: 12 };
-      if (cardsOn) deck = { w: deckH * CARD_RATIO, h: deckH, x: (stageW - deckH * CARD_RATIO) / 2, y: 12 };
+      // Les paquets se partagent l'espace entre le cadran et la boule.
+      const mids = [cardsOn && 'cards', leOn && 'le'].filter(Boolean);
+      const x0 = lunarOn ? 12 + w + 8 : 12;
+      const x1 = oracleOn ? stageW - w - 20 : stageW - 12;
+      const slotW = (x1 - x0) / (mids.length || 1);
+      mids.forEach((k, i) => {
+        const cx = x0 + slotW * (i + 0.5);
+        const bw = k === 'cards' ? deckH * CARD_RATIO : deckH * LENORMAND_RATIO * 1.45;
+        const box = { w: bw, h: deckH, x: cx - bw / 2, y: 12, lw: mids.length > 1 ? Math.max(70, slotW - 6) : 0 };
+        if (k === 'cards') deck = box; else leDeck = box;
+      });
     }
     const { pw, ph, bm, cs } = dims;
     this.ballRest = ball;
     this.dialRest = dial;
     this.deckRest = deck;
+    this.leRest = leDeck;
 
     const desk = this.q('.desk');
     if (!this.book || !this.book.background) {
@@ -374,6 +401,7 @@ export class Reader {
     if (this.oracle) this.oracle.layout();
     if (this.lunar) this.lunar.layout();
     if (this.cards) this.cards.layout();
+    if (this.lenormand) this.lenormand.layout();
   }
 
   onResize() {
@@ -426,6 +454,7 @@ export class Reader {
     if (this.oracle && this.oracle.state === 'focus') return;
     if (this.lunar && this.lunar.isOpen) return;
     if (this.cards && this.cards.isOpen) return;
+    if (this.lenormand && this.lenormand.isOpen) return;
     this.state = 'opening';
     this.sound.unlock();
     this.sound.chime();
@@ -526,6 +555,10 @@ export class Reader {
     }
     if (this.cards && this.cards.isOpen) {
       if (e.key === 'Escape') this.cards.close();
+      return;
+    }
+    if (this.lenormand && this.lenormand.isOpen) {
+      if (e.key === 'Escape') this.lenormand.onEscape();
       return;
     }
     if (e.key === 'Escape') {

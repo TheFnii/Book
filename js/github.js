@@ -34,6 +34,10 @@ export function bookAssetPaths(book) {
   if (book.cover && book.cover.image) out.add(book.cover.image);
   if (book.background) out.add(book.background);
   if (book.cards && book.cards.back) out.add(book.cards.back);
+  if (book.lenormand) {
+    if (book.lenormand.back) out.add(book.lenormand.back);
+    Object.values(book.lenormand.images || {}).forEach((p) => { if (p) out.add(p); });
+  }
   return out;
 }
 

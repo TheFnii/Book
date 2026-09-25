@@ -235,6 +235,7 @@ export class Cards {
     d.width = rest.w.toFixed(1) + 'px';
     d.height = rest.h.toFixed(1) + 'px';
     this.desk.style.setProperty('--dw', rest.w.toFixed(1) + 'px');
+    this.labelEl.style.width = rest.lw ? rest.lw.toFixed(0) + 'px' : '';
     // Le texte sous le paquet ne doit jamais sortir de l'écran.
     const lw = this.labelEl.offsetWidth;
     const lcx = rest.x + rest.w / 2;
@@ -309,6 +310,7 @@ export class Cards {
     if (r.state === 'opening' || r.state === 'closing') return false;
     if (r.oracle && r.oracle.state === 'focus') return false;
     if (r.lunar && r.lunar.isOpen) return false;
+    if (r.lenormand && r.lenormand.isOpen) return false;
     return true;
   }
 

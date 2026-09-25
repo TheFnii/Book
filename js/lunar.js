@@ -294,6 +294,7 @@ export class LunarCalendar {
     if (rs === 'opening' || rs === 'closing') return;
     if (this.reader.oracle && this.reader.oracle.state === 'focus') return;
     if (this.reader.cards && this.reader.cards.isOpen) return;
+    if (this.reader.lenormand && this.reader.lenormand.isOpen) return;
     this.isOpen = true;
     this.reader.hidePanels();
     this.sound.unlock();

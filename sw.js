@@ -1,7 +1,7 @@
 // Service worker : le grimoire reste lisible hors ligne.
 // - Fichiers de l'application : réseau d'abord (les mises à jour arrivent tout de suite), cache en secours.
 // - Images des pages : cache d'abord (leur nom change quand leur contenu change).
-const CACHE = 'grimoire-v6';
+const CACHE = 'grimoire-v7';
 const SHELL = [
   './',
   'index.html',
@@ -10,6 +10,7 @@ const SHELL = [
   'css/reader.css',
   'css/lunar.css',
   'css/cards.css',
+  'css/lenormand.css',
   'fonts/fonts.css',
   'fonts/cinzel-0.woff2',
   'fonts/cinzel-decorative-1.woff2',
@@ -29,6 +30,10 @@ const SHELL = [
   'js/moon.js',
   'js/moon-draw.js',
   'js/cards.js',
+  'js/lenormand.js',
+  'js/lenormand-data.js',
+  'js/lenormand-reading.js',
+  'js/lenormand-art.js',
   'img/desk.jpg',
   'img/parchment.jpg',
   'img/leather.jpg',

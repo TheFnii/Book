@@ -151,6 +151,12 @@
       "Toutes les pièces du puzzle finissent par trouver leur place naturelle. Prendre la mesure de la sagesse acquise permet de se tenir au centre de sa vie, le cœur serein et prêt à accueillir l’inconnu."
     ]
   },
+  "lenormand": {
+    "enabled": true,
+    "label": "Petit Lenormand",
+    "back": null,
+    "images": {}
+  },
   "pageRatio": 0.707,
   "pages": [
     {

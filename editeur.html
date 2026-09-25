@@ -115,6 +115,33 @@
         </div>
       </section>
 
+      <section class="box le-box">
+        <h2>Petit Lenormand</h2>
+        <label class="check"><input type="checkbox" id="le-on"> Afficher le jeu Lenormand sur le bureau</label>
+        <div id="le-fields">
+          <label class="field">Texte affiché au survol du paquet
+            <input id="le-label" type="text" maxlength="40" autocomplete="off">
+          </label>
+          <div class="cards-back-row">
+            <div class="card-back-preview le-back-preview" id="le-back-preview"></div>
+            <div>
+              <p class="mini-title">Dos des cartes</p>
+              <div class="row wrap">
+                <button type="button" id="le-back" class="btn small">Changer le dos…</button>
+                <button type="button" id="le-back-rm" class="btn small ghost" hidden>Dos par défaut</button>
+              </div>
+              <p class="help">Image portrait au format 5 × 8, par exemple 1000 × 1600 px.</p>
+            </div>
+          </div>
+          <details class="le-imgs">
+            <summary>Dessins des 36 cartes <span class="count" id="le-img-count"></span></summary>
+            <p class="help">Touchez une carte pour la remplacer par votre image (la carte entière, format 5 × 8, faite dans Canva par exemple). ✕ remet le dessin d’origine.</p>
+            <div class="le-edit-grid" id="le-grid"></div>
+          </details>
+          <p class="help">Les significations, les règles et les tirages font partie du jeu et s’affichent dans son livret.</p>
+        </div>
+      </section>
+
       <section class="box how">
         <h2>Mode d’emploi</h2>
         <ol>

@@ -5,6 +5,9 @@ import { prepareImage, naturalSort } from './images.js';
 import { GitHub, bookAssetPaths } from './github.js';
 import { coverSVG, fitCoverText } from './cover.js';
 import { cardBackURL } from './cards.js';
+import { cardFace } from './lenormand.js';
+import { lenormandBackURL } from './lenormand-art.js';
+import { CARDS as LE_CARDS } from './lenormand-data.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -105,7 +108,38 @@ function render() {
   renderOracle();
   renderLunar();
   renderCards();
+  renderLenormand();
   renderPages();
+}
+
+// Petit Lenormand : dos et dessins des 36 cartes.
+let leBackRendered = '';
+let leGridRendered = '';
+async function renderLenormand() {
+  const l = state.book.lenormand;
+  $('#le-on').checked = l.enabled;
+  $('#le-fields').hidden = !l.enabled;
+  if (document.activeElement !== $('#le-label')) $('#le-label').value = l.label;
+  $('#le-back-rm').hidden = !l.back;
+  const n = Object.keys(l.images).length;
+  $('#le-img-count').textContent = n ? `(${n} remplacé${n > 1 ? 's' : ''})` : '';
+  const bkey = l.back || 'default';
+  if (bkey !== leBackRendered) {
+    leBackRendered = bkey;
+    const img = new Image();
+    img.alt = 'Dos des cartes Lenormand';
+    img.src = l.back ? await resolveSrc(l.back) : lenormandBackURL();
+    $('#le-back-preview').replaceChildren(img);
+  }
+  const gkey = JSON.stringify(l.images);
+  if (gkey === leGridRendered) return;
+  leGridRendered = gkey;
+  const urls = {};
+  await Promise.all(Object.entries(l.images).map(async ([k, p]) => { urls[k] = await resolveSrc(p); }));
+  $('#le-grid').innerHTML = LE_CARDS.slice(1).map((c) => `<div class="le-edit-cell">
+      <button type="button" class="pick" data-le="${c.n}" title="${c.n}. ${c.name} — remplacer le dessin"><span class="le-face le-front">${cardFace(c.n, urls[c.n])}</span></button>
+      ${urls[c.n] ? `<button type="button" class="reset" data-le-reset="${c.n}" title="Remettre le dessin d’origine" aria-label="Remettre le dessin d’origine">✕</button><span class="custom-dot"></span>` : ''}
+    </div>`).join('');
 }
 
 // Messages des cartes : un paragraphe par carte, séparés par une ligne vide.
@@ -786,6 +820,42 @@ function bindUI() {
     } catch (e) { toast(e.message); } finally { busy(false); }
   });
   $('#cards-back-rm').onclick = () => mutate(() => { state.book.cards.back = null; });
+  $('#le-on').onchange = (e) => mutate(() => { state.book.lenormand.enabled = e.target.checked; });
+  let leHist = false;
+  $('#le-label').addEventListener('input', () => {
+    if (!leHist) { pushHistory(); leHist = true; }
+    state.book.lenormand.label = $('#le-label').value;
+    saveDraft();
+    renderStatus();
+  });
+  $('#le-label').addEventListener('blur', () => { leHist = false; });
+  $('#le-back').onclick = () => pickOne(async (f) => {
+    try {
+      busy('Préparation du dos des cartes…');
+      const r = await storeImage(f, { folder: 'assets', maxSide: 1600 });
+      mutate(() => { state.book.lenormand.back = r.path; });
+    } catch (e) { toast(e.message); } finally { busy(false); }
+  });
+  $('#le-back-rm').onclick = () => mutate(() => { state.book.lenormand.back = null; });
+  $('#le-grid').addEventListener('click', (e) => {
+    const reset = e.target.closest('[data-le-reset]');
+    if (reset) {
+      const n = reset.dataset.leReset;
+      mutate(() => { delete state.book.lenormand.images[n]; });
+      return;
+    }
+    const pick = e.target.closest('[data-le]');
+    if (!pick) return;
+    const n = pick.dataset.le;
+    pickOne(async (f) => {
+      try {
+        busy(`Préparation de la carte ${n}…`);
+        const r = await storeImage(f, { folder: 'assets', maxSide: 1400 });
+        mutate(() => { state.book.lenormand.images[n] = r.path; });
+        toast(`Carte ${n} remplacée`);
+      } catch (err) { toast(err.message); } finally { busy(false); }
+    });
+  });
   let cardsHist = false;
   [['cards-label', 'label'], ['cards-messages', 'messages']].forEach(([id, key]) => {
     const input = $('#' + id);

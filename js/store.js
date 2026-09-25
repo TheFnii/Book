@@ -1,5 +1,5 @@
 // Stockage local (IndexedDB) : brouillon de l'éditeur et images pas encore publiées.
-import { BOOK_FILE, DEFAULT_RATIO, DEFAULT_ORACLE, DEFAULT_LUNAR, DEFAULT_CARDS } from './config.js';
+import { BOOK_FILE, DEFAULT_RATIO, DEFAULT_ORACLE, DEFAULT_LUNAR, DEFAULT_CARDS, DEFAULT_LENORMAND } from './config.js';
 
 const DB_NAME = 'grimoire';
 const DB_VERSION = 1;
@@ -75,6 +75,11 @@ export function normalizeBook(b) {
   const messages = Array.isArray(c.messages)
     ? c.messages.map((m) => String(m).replace(/\s+/g, ' ').trim().slice(0, 900)).filter(Boolean)
     : [...DEFAULT_CARDS.messages];
+  const le = b.lenormand && typeof b.lenormand === 'object' ? b.lenormand : {};
+  const leImages = {};
+  if (le.images && typeof le.images === 'object') {
+    Object.entries(le.images).forEach(([k, v]) => { if (Number(k) >= 1 && Number(k) <= 36 && typeof v === 'string' && v) leImages[String(Number(k))] = v; });
+  }
   return {
     version: 1,
     cover: {
@@ -95,6 +100,12 @@ export function normalizeBook(b) {
       label: typeof c.label === 'string' ? c.label : DEFAULT_CARDS.label,
       back: typeof c.back === 'string' && c.back ? c.back : null,
       messages,
+    },
+    lenormand: {
+      enabled: le.enabled !== false,
+      label: typeof le.label === 'string' ? le.label : DEFAULT_LENORMAND.label,
+      back: typeof le.back === 'string' && le.back ? le.back : null,
+      images: leImages,
     },
     updated: typeof b.updated === 'string' ? b.updated : null,
     pageRatio: Number(b.pageRatio) > 0.2 && Number(b.pageRatio) < 3 ? Number(b.pageRatio) : DEFAULT_RATIO,
