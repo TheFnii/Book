@@ -115,8 +115,10 @@ export class Radio {
     this.audio = new Audio();
     this.audio.crossOrigin = 'anonymous';
     this.audio.preload = 'none';
-    this.audio.addEventListener('ended', () => this.step(1));
+    this.audio.addEventListener('ended', () => { if (this.on && this.audio.currentTime > 3) this.step(1); });
     this.audio.addEventListener('error', () => { if (this.on) this.onError(); });
+    // Un morceau ne compte comme « réussi » que s'il joue vraiment quelques secondes.
+    this.audio.addEventListener('timeupdate', () => { if (this.audio.currentTime > 2) this.fails = 0; });
     this.audio.addEventListener('play', () => this.syncPlay());
     this.audio.addEventListener('pause', () => this.syncPlay());
 
@@ -128,7 +130,9 @@ export class Radio {
       const a = b.dataset.r;
       if (a === 'prev') this.step(-1);
       if (a === 'next') this.step(1);
-      if (a === 'play') { if (this.audio.paused) this.audio.play().catch(() => {}); else this.audio.pause(); }
+      if (a === 'play') {
+        if (this.stalled) { this.stalled = false; this.fails = 0; this.load(this.index); } else if (this.audio.paused) this.audio.play().catch(() => {}); else this.audio.pause();
+      }
       if (a === 'off') this.powerOff();
       if (a === 'vintage') {
         this.vintage = !this.vintage;
@@ -217,15 +221,17 @@ export class Radio {
     }
   }
 
-  load(i, play = true) {
+  load(i, play = true, source = 0) {
     const n = this.tracks.length;
     this.index = ((i % n) + n) % n;
     const t = this.tracks[this.index];
-    this.audio.src = SUNO_AUDIO(t.id);
+    this.source = source;
+    this.attempt = (this.attempt || 0) + 1;
+    // Deux sources possibles chez Suno : le flux .m4a, puis le .mp3.
+    this.audio.src = source === 0 ? SUNO_AUDIO(t.id) : `https://cdn1.suno.ai/${t.id}.mp3`;
     this.titleEl.textContent = `♪ ${t.title}`;
-    this.errors = this.errors || 0;
     this.save();
-    if (play) this.audio.play().catch(() => this.onError());
+    if (play) this.audio.play().catch((e) => { if (e && e.name !== 'AbortError') this.onError(); });
   }
 
   step(d) {
@@ -235,20 +241,28 @@ export class Radio {
   }
 
   onError() {
-    // Morceau indisponible : on passe au suivant (sans boucler indéfiniment).
-    this.errors = (this.errors || 0) + 1;
-    if (this.errors > Math.min(5, this.tracks.length)) {
-      this.titleEl.textContent = 'La radio ne capte pas pour le moment…';
+    // Une seule réaction par tentative (l'erreur peut arriver deux fois : chargement et lecture).
+    const key = `${this.index}:${this.source}:${this.attempt}`;
+    if (this.handled === key) return;
+    this.handled = key;
+    // 1) autre source pour le même morceau ; 2) morceau suivant ; 3) après 3 échecs d'affilée, on s'arrête.
+    if (this.source === 0) { this.load(this.index, true, 1); return; }
+    this.fails = (this.fails || 0) + 1;
+    if (this.fails >= 3) {
+      this.audio.pause();
+      this.audio.removeAttribute('src');
+      this.titleEl.textContent = 'La radio ne capte pas… Réessayez avec ▶';
+      this.stalled = true;
+      this.syncPlay();
       return;
     }
-    setTimeout(() => { if (this.on) this.load(this.index + 1); }, 400);
+    setTimeout(() => { if (this.on) this.load(this.index + 1); }, 1200);
   }
 
   syncPlay() {
     const playing = !this.audio.paused;
     this.playBtn.innerHTML = playing ? IC.pause : IC.play;
     this.root.classList.toggle('radio-playing', this.on && playing);
-    if (playing) this.errors = 0;
   }
 
   // Petit bruit de réglage quand on allume ou change de station.
@@ -270,6 +284,8 @@ export class Radio {
     this.bar.hidden = false;
     this.tune();
     this.applyVolume();
+    this.fails = 0;
+    this.stalled = false;
     this.load(this.index);
   }
 
