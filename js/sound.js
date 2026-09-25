@@ -249,6 +249,30 @@ export class Sound {
     this.pad([164.8, 246.9, 329.6], t, 0.07, 0.05, 3.2, 'triangle');
   }
 
+  // Carte tirée du paquet (glissement du carton).
+  cardDraw() {
+    if (!this.ready) return;
+    const t = this.ctx.currentTime + 0.01;
+    this.rustle(t, 0.34, 0.32, 2200, 5200, 1.1);
+    this.rustle(t + 0.07, 0.45, 0.1, 1100, 600, 0.8);
+  }
+
+  // Carte qui se retourne.
+  cardFlip() {
+    if (!this.ready) return;
+    const t = this.ctx.currentTime + 0.01;
+    this.rustle(t, 0.22, 0.28, 3800, 1500, 1.3);
+    this.rustle(t + 0.2, 0.08, 0.18, 2000, 1400, 1.5);
+  }
+
+  // Le message apparaît.
+  cardReveal() {
+    if (!this.ready) return;
+    const t = this.ctx.currentTime + 0.02;
+    [1046.5, 1318.5, 1568, 2093].forEach((f, i) => this.glass(f, t + i * 0.09, 0.05 - i * 0.008, 2.8));
+    this.pad([261.6, 392, 523.3], t, 0.045, 0.08, 2.6, 'triangle');
+  }
+
   // Petit tintement (clic de bouton, sommaire…).
   tink() {
     if (!this.ready) return;

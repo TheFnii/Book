@@ -293,6 +293,7 @@ export class LunarCalendar {
     const rs = this.reader.state;
     if (rs === 'opening' || rs === 'closing') return;
     if (this.reader.oracle && this.reader.oracle.state === 'focus') return;
+    if (this.reader.cards && this.reader.cards.isOpen) return;
     this.isOpen = true;
     this.reader.hidePanels();
     this.sound.unlock();

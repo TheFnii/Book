@@ -1,5 +1,5 @@
 // Stockage local (IndexedDB) : brouillon de l'éditeur et images pas encore publiées.
-import { BOOK_FILE, DEFAULT_RATIO, DEFAULT_ORACLE, DEFAULT_LUNAR } from './config.js';
+import { BOOK_FILE, DEFAULT_RATIO, DEFAULT_ORACLE, DEFAULT_LUNAR, DEFAULT_CARDS } from './config.js';
 
 const DB_NAME = 'grimoire';
 const DB_VERSION = 1;
@@ -71,6 +71,10 @@ export function normalizeBook(b) {
       tips: Array.isArray(p.tips) ? p.tips.map((t) => String(t).trim().slice(0, 160)).filter(Boolean) : [...def.tips],
     };
   });
+  const c = b.cards && typeof b.cards === 'object' ? b.cards : {};
+  const messages = Array.isArray(c.messages)
+    ? c.messages.map((m) => String(m).replace(/\s+/g, ' ').trim().slice(0, 900)).filter(Boolean)
+    : [...DEFAULT_CARDS.messages];
   return {
     version: 1,
     cover: {
@@ -86,6 +90,12 @@ export function normalizeBook(b) {
       answers,
     },
     lunar: { enabled: l.enabled !== false, phases: lunarPhases },
+    cards: {
+      enabled: c.enabled !== false,
+      label: typeof c.label === 'string' ? c.label : DEFAULT_CARDS.label,
+      back: typeof c.back === 'string' && c.back ? c.back : null,
+      messages,
+    },
     updated: typeof b.updated === 'string' ? b.updated : null,
     pageRatio: Number(b.pageRatio) > 0.2 && Number(b.pageRatio) < 3 ? Number(b.pageRatio) : DEFAULT_RATIO,
     pages: pages

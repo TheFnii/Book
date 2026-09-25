@@ -205,6 +205,21 @@ a { color: var(--gold-light); }
 .lunar-phase summary i { font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--muted); letter-spacing: 0; margin-left: 6px; }
 .lunar-phase .inner { padding: 0 12px 4px; }
 .lunar-phase .field textarea { min-height: 110px; }
+.cards-box h2 { color: #f1d386; }
+.cards-back-row { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+.card-back-preview {
+  flex: none;
+  width: 84px;
+  aspect-ratio: 3 / 5;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #141845;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .5), 0 0 0 1px rgba(232, 199, 122, .3);
+}
+.card-back-preview img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mini-title { margin: 0 0 8px; font-size: 15px; color: var(--muted); }
+.cards-box .help { margin-top: 8px; }
+#cards-messages { min-height: 260px; }
 
 /* ---------- Pages ---------- */
 .pages-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }

@@ -4,6 +4,7 @@ import { kv, blobs, normalizeBook, fetchPublishedBook, resolveSrc, forgetResolve
 import { prepareImage, naturalSort } from './images.js';
 import { GitHub, bookAssetPaths } from './github.js';
 import { coverSVG, fitCoverText } from './cover.js';
+import { cardBackURL } from './cards.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -103,7 +104,30 @@ function render() {
   renderBackground();
   renderOracle();
   renderLunar();
+  renderCards();
   renderPages();
+}
+
+// Messages des cartes : un paragraphe par carte, séparés par une ligne vide.
+const parseMessages = (v) => v.split(/\n\s*\n/).map((m) => m.replace(/\s+/g, ' ').trim()).filter(Boolean);
+
+let backRendered = '';
+async function renderCards() {
+  const c = state.book.cards;
+  $('#cards-on').checked = c.enabled;
+  $('#cards-fields').hidden = !c.enabled;
+  if (document.activeElement !== $('#cards-label')) $('#cards-label').value = c.label;
+  if (document.activeElement !== $('#cards-messages')) $('#cards-messages').value = c.messages.join('\n\n');
+  const n = c.messages.length;
+  $('#cards-count').textContent = n ? `(${n})` : '(aucun : les messages par défaut seront utilisés)';
+  $('#cards-back-rm').hidden = !c.back;
+  const key = c.back || 'default';
+  if (key === backRendered) return;
+  backRendered = key;
+  const img = new Image();
+  img.alt = 'Dos des cartes';
+  img.src = c.back ? await resolveSrc(c.back) : cardBackURL();
+  $('#cards-back-preview').replaceChildren(img);
 }
 
 const LUNAR_ICONS = ['🌑', '🌓', '🌕', '🌗'];
@@ -753,6 +777,27 @@ function bindUI() {
 
   $('#oracle-on').onchange = (e) => mutate(() => { state.book.oracle.enabled = e.target.checked; });
   $('#lunar-on').onchange = (e) => mutate(() => { state.book.lunar.enabled = e.target.checked; });
+  $('#cards-on').onchange = (e) => mutate(() => { state.book.cards.enabled = e.target.checked; });
+  $('#cards-back').onclick = () => pickOne(async (f) => {
+    try {
+      busy('Préparation du dos des cartes…');
+      const r = await storeImage(f, { folder: 'assets', maxSide: 1600 });
+      mutate(() => { state.book.cards.back = r.path; });
+    } catch (e) { toast(e.message); } finally { busy(false); }
+  });
+  $('#cards-back-rm').onclick = () => mutate(() => { state.book.cards.back = null; });
+  let cardsHist = false;
+  [['cards-label', 'label'], ['cards-messages', 'messages']].forEach(([id, key]) => {
+    const input = $('#' + id);
+    input.addEventListener('input', () => {
+      if (!cardsHist) { pushHistory(); cardsHist = true; }
+      state.book.cards[key] = key === 'messages' ? parseMessages(input.value) : input.value;
+      saveDraft();
+      renderStatus();
+      renderCards();
+    });
+    input.addEventListener('blur', () => { cardsHist = false; });
+  });
   let oracleHist = false;
   [['oracle-title', 'title'], ['oracle-subtitle', 'subtitle'], ['oracle-answers', 'answers']].forEach(([id, key]) => {
     const input = $('#' + id);

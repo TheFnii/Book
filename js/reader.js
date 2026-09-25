@@ -5,7 +5,8 @@ import { FX } from './fx.js';
 import { Sound } from './sound.js';
 import { Oracle } from './oracle.js';
 import { LunarCalendar } from './lunar.js';
-import { DESK, BALL } from './config.js';
+import { Cards } from './cards.js';
+import { DESK, BALL, CARD_RATIO } from './config.js';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -152,6 +153,10 @@ export class Reader {
       this.lunar = new LunarCalendar(this, book.lunar);
       this.lunar.layout();
     }
+    if (book.cards && book.cards.enabled) {
+      this.cards = new Cards(this, book.cards);
+      this.cards.layout();
+    }
     this.root.classList.add('ready');
   }
 
@@ -251,7 +256,9 @@ export class Reader {
     // Le livre est centré sur le sous-main ; la boule est posée sur le bois, à côté.
     const oracleOn = !!(this.book && this.book.oracle && this.book.oracle.enabled);
     const lunarOn = !!(this.book && this.book.lunar && this.book.lunar.enabled);
-    const objectsOn = oracleOn || lunarOn;
+    const cardsOn = !!(this.book && this.book.cards && this.book.cards.enabled);
+    const objectsOn = oracleOn || lunarOn || cardsOn;
+    const labelH = 44; // place du texte sous le paquet de cartes
     const P = DESK.pad;
     const R = DESK.ratio;
     const pcx = P.x + P.w / 2;
@@ -264,6 +271,7 @@ export class Reader {
     let iy;
     let ball = null;
     let dial = null;
+    let deck = null;
     let dims;
     const size = (pw) => {
       const ph = pw / r;
@@ -304,14 +312,29 @@ export class Reader {
           const dw = Math.min(w, padLeft * 0.82);
           if (lunarOn && dw >= 50) dial = { w: dw, h: dw, x: (padLeft - dw) / 2, y };
           if (lunarOn && !dial) ball = null;
+          // Paquet de cartes : sous le cadran (à gauche), sinon sous la boule (à droite).
+          if (cardsOn) {
+            const bottom = stageH - 10 - labelH;
+            const spots = [];
+            if (dw >= 50) spots.push({ col: dw, cx: padLeft / 2, top: dial ? dial.y + dial.h + Math.max(18, dw * 0.16) : y });
+            spots.push({ col: w, cx: padRight + strip / 2, top: ball ? ball.y + ball.h + Math.max(14, w * 0.1) : y });
+            for (const sp of spots) {
+              let cw = Math.min(sp.col * 0.58, 130);
+              let ch = cw / CARD_RATIO;
+              if (sp.top + ch > bottom) { ch = bottom - sp.top; cw = ch * CARD_RATIO; }
+              if (cw >= 36) { deck = { w: cw, h: ch, x: sp.cx - cw / 2, y: sp.top }; break; }
+            }
+          }
         }
       }
     }
-    if (H === undefined || (oracleOn && !ball) || (lunarOn && !dial)) {
+    if (H === undefined || (oracleOn && !ball) || (lunarOn && !dial) || (cardsOn && !deck)) {
       // Écran étroit : boule en haut, sous-main et livre juste en dessous.
       dims = size(pwMax);
       const w = objectsOn ? Math.min(Math.max(Math.min(vw, vh) * 0.2, 64), 190) : 0;
-      const band = objectsOn ? (oracleOn ? w * topRatio : w) + 24 : 0;
+      const objH = oracleOn ? w * topRatio : w;
+      const deckH = cardsOn ? Math.max(objH * 0.72, 56) : 0;
+      const band = objectsOn ? Math.max(oracleOn || lunarOn ? objH + 24 : 0, cardsOn ? 12 + deckH + labelH : 0) : 0;
       H = Math.max(vh, vw / R, band / P.y, (dims.spreadW * 1.07) / (P.w * R));
       iy = Math.min(0, Math.max(band - P.y * H, vh - H));
       ix = hx - pcx * H * R;
@@ -321,10 +344,12 @@ export class Reader {
       dims.cs = Math.min(dims.cs, ((padBottom - padTop) * 0.9) / dims.coverH);
       if (oracleOn) ball = { w, h: w * topRatio, x: stageW - w - 12, y: 12 };
       if (lunarOn) dial = { w, h: w, x: 12, y: 12 };
+      if (cardsOn) deck = { w: deckH * CARD_RATIO, h: deckH, x: (stageW - deckH * CARD_RATIO) / 2, y: 12 };
     }
     const { pw, ph, bm, cs } = dims;
     this.ballRest = ball;
     this.dialRest = dial;
+    this.deckRest = deck;
 
     const desk = this.q('.desk');
     if (!this.book || !this.book.background) {
@@ -348,6 +373,7 @@ export class Reader {
     this.updateStacks();
     if (this.oracle) this.oracle.layout();
     if (this.lunar) this.lunar.layout();
+    if (this.cards) this.cards.layout();
   }
 
   onResize() {
@@ -399,6 +425,7 @@ export class Reader {
     if (this.state !== 'closed' || !this.pf) return;
     if (this.oracle && this.oracle.state === 'focus') return;
     if (this.lunar && this.lunar.isOpen) return;
+    if (this.cards && this.cards.isOpen) return;
     this.state = 'opening';
     this.sound.unlock();
     this.sound.chime();
@@ -495,6 +522,10 @@ export class Reader {
     }
     if (this.lunar && this.lunar.isOpen) {
       if (e.key === 'Escape') this.lunar.close();
+      return;
+    }
+    if (this.cards && this.cards.isOpen) {
+      if (e.key === 'Escape') this.cards.close();
       return;
     }
     if (e.key === 'Escape') {

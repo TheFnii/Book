@@ -140,6 +140,7 @@ export class Oracle {
     if (this.state !== 'rest' || !this.reader.ballRest) return;
     if (this.reader.state === 'opening' || this.reader.state === 'closing') return;
     if (this.reader.lunar && this.reader.lunar.isOpen) return;
+    if (this.reader.cards && this.reader.cards.isOpen) return;
     this.state = 'focus';
     this.reader.hidePanels();
     this.sound.unlock();

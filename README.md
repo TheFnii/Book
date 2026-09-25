@@ -74,6 +74,18 @@ Dans l'atelier, l'encadré **Calendrier lunaire** permet d'afficher ou masquer l
 
 ---
 
+## Les cartes « Messages de l'univers »
+
+Un paquet de cartes est posé sur le bureau, sous le cadran lunaire (en haut au centre sur téléphone). Au survol de la souris, le texte « Messages de l'univers » apparaît dessous ; sur les écrans tactiles, il reste affiché. Un toucher tire une carte au hasard : elle quitte le paquet, vient au centre et se retourne pour révéler son message. **Tirer une autre carte** en propose une nouvelle ; on ne retombe sur une carte qu'après avoir vu toutes les autres.
+
+Dans l'atelier, l'encadré **Cartes « Messages de l'univers »** permet de :
+- afficher ou masquer le paquet ;
+- changer le texte affiché au survol ;
+- remplacer le **dos des cartes** par votre propre image (portrait au format 3 × 5, par exemple 1200 × 2000 px, faite dans Canva par exemple), ou revenir au dos dessiné ;
+- modifier les messages, **séparés par une ligne vide** (54 messages au départ).
+
+---
+
 ## Installer le livre sur un téléphone
 
 - **Android (Chrome)** : ouvrez le lien du livre → menu **⋮** → **Installer l'application** (ou *Ajouter à l'écran d'accueil*).
@@ -103,11 +115,12 @@ Site statique, sans étape de compilation : HTML, CSS et JavaScript (modules ES)
 | `js/fx.js` | Particules dorées |
 | `js/oracle.js` | Boule de voyance |
 | `js/lunar.js`, `js/moon.js`, `js/moon-draw.js` | Calendrier lunaire : cadran, panneau, calcul des phases, dessin de la lune |
+| `js/cards.js`, `css/cards.css` | Cartes « Messages de l'univers » : paquet, tirage, dos de carte dessiné |
 | `js/sound.js` | Sons générés en direct (Web Audio, sans fichier audio) |
 | `editeur.html`, `js/editor.js` | Atelier |
 | `js/github.js` | Publication : un seul commit par publication, via l'API Git de GitHub |
 | `js/images.js`, `js/store.js` | Préparation des images, brouillon local (IndexedDB) |
-| `book.json` | Contenu du livre (ordre des pages, titres, couverture) |
+| `book.json` | Contenu du livre (pages, couverture, boule, calendrier, cartes) |
 | `pages/`, `assets/` | Images (nommées d'après leur contenu) |
 | `sw.js`, `manifest.webmanifest` | Application installable et lecture hors ligne |
 

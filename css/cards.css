@@ -1,0 +1,298 @@
+/* ---------- Cartes « Messages de l'univers » ---------- */
+
+/* Paquet posé sur le bureau */
+.cards-desk {
+  position: absolute;
+  z-index: 5;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+  animation: oracleIn 1.4s ease .7s both;
+  transition: opacity .45s ease .7s, filter 1s ease;
+}
+.cdk-deck { position: absolute; inset: 0; transform: rotate(-7deg); }
+.cdk-card {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--dw, 80px) * .055);
+  overflow: hidden;
+  background: #141845;
+}
+.cdk-card img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+.cdk-under {
+  transform: translate(calc(var(--dw, 80px) * .12), calc(var(--dw, 80px) * .04)) rotate(12deg);
+  filter: brightness(.55) saturate(.9);
+  box-shadow: 0 calc(var(--dw, 80px) * .04) calc(var(--dw, 80px) * .1) rgba(0, 0, 0, .6);
+}
+/* Tranche dorée du paquet + ombre portée sur le bois */
+.cdk-top {
+  box-shadow:
+    1px 1px 0 #d8b86a, 2px 2px 0 #6f5423, 3px 3px 0 #d2af60, 4px 4px 0 #5e461c, 5px 5px 0 #c9a55a,
+    0 calc(var(--dw, 80px) * .08) calc(var(--dw, 80px) * .16) rgba(0, 0, 0, .7);
+  transition: transform .45s cubic-bezier(.3, 1.45, .5, 1);
+}
+.cdk-glow {
+  position: absolute;
+  inset: -32%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 214, 140, .32), rgba(255, 190, 90, .08) 62%, transparent);
+  animation: ldglow 5s ease-in-out infinite;
+  pointer-events: none;
+}
+.cards-desk:hover .cdk-top, .cards-desk:focus-visible .cdk-top { transform: translate(-4%, -8%) rotate(-3deg); }
+.cards-desk:hover .cdk-glow { animation-duration: 2.2s; }
+.cards-desk.drawn .cdk-top { visibility: hidden; transition: none; }
+
+/* Texte qui apparaît sous le paquet */
+.cdk-label {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 12px);
+  width: 11em;
+  font: 600 clamp(11px, 1.15vw, 14px)/1.35 'Cinzel', serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #f6e3a8;
+  text-shadow: 0 1px 2px #000, 0 0 10px rgba(0, 0, 0, .9), 0 0 18px rgba(232, 199, 122, .45);
+  opacity: 0;
+  transform: translate(calc(-50% + var(--lsh, 0px)), -4px);
+  transition: opacity .35s ease, transform .35s ease;
+  pointer-events: none;
+}
+.cards-desk:hover .cdk-label, .cards-desk:focus-visible .cdk-label { opacity: 1; transform: translate(calc(-50% + var(--lsh, 0px)), 0); }
+/* Écrans tactiles (pas de survol) : le texte reste affiché, discrètement. */
+@media (hover: none) {
+  .cdk-label { opacity: .85; transform: translate(calc(-50% + var(--lsh, 0px)), 0); letter-spacing: .08em; }
+}
+.cards-desk:focus-visible .cdk-top { outline: 2px solid rgba(246, 227, 168, .85); outline-offset: 3px; }
+
+.reader.is-opening .cards-desk, .reader.panel-open .cards-desk { pointer-events: none; }
+.reader.oracle-open .cards-desk, .reader.lunar-open .cards-desk { opacity: 0; pointer-events: none; transition: opacity .35s; }
+.reader.cards-open .oracle-desk, .reader.cards-open .lunar-desk { opacity: 0; pointer-events: none; transition: opacity .35s; }
+.reader.cards-open .cards-desk { filter: blur(4px) brightness(.4); pointer-events: none; transition: filter 1s ease; }
+
+/* Mise au point : le bureau s'efface */
+.reader.cards-open .stage, .reader.cards-open .scene {
+  transform-origin: var(--cox) var(--coy);
+  transform: scale(1.06);
+  filter: blur(5px) brightness(.36) saturate(.85);
+}
+.reader.cards-open .toolbar, .reader.cards-open .hint { opacity: 0 !important; pointer-events: none !important; }
+.cards-aura {
+  position: absolute;
+  inset: 0;
+  z-index: 14;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s;
+  background:
+    radial-gradient(ellipse 55% 50% at 50% 45%, rgba(215, 165, 75, .2), transparent 70%),
+    radial-gradient(ellipse 80% 70% at 50% 50%, rgba(35, 30, 85, .25), rgba(8, 6, 22, .78));
+}
+.reader.cards-open .cards-aura { opacity: 1; }
+.cards-veil { position: absolute; inset: 0; z-index: 15; display: none; }
+.reader.cards-open .cards-veil { display: block; }
+
+/* Carte tirée */
+.cd-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 16;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+  perspective: calc(var(--cdw, 300px) * 4);
+}
+.cd-card.live { opacity: 1; }
+.cd-card.anim { transition: transform 1s cubic-bezier(.6, .02, .25, 1); }
+.cd-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform .85s cubic-bezier(.45, .05, .3, 1);
+}
+.cd-card.revealed .cd-inner { transform: rotateY(180deg); }
+.cd-card.shuffle .cd-inner { animation: cdShuffle .5s ease; }
+@keyframes cdShuffle {
+  30% { transform: translateY(-4%) rotate(-3deg); }
+  65% { transform: translateY(2%) rotate(2.5deg); }
+}
+.cd-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: calc(var(--cdw, 300px) * .055);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  box-shadow: 0 calc(var(--cdw, 300px) * .06) calc(var(--cdw, 300px) * .16) rgba(0, 0, 0, .65), 0 0 0 1px rgba(232, 199, 122, .25);
+}
+.cd-back img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+.cd-front {
+  transform: rotateY(180deg);
+  background: #f3e7cc url(../img/parchment.jpg) center / cover;
+  color: #3a2718;
+}
+.cd-frame {
+  position: absolute;
+  inset: 5%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5%;
+  padding: 8% 9%;
+  border: 1.5px solid rgba(150, 110, 45, .75);
+  border-radius: calc(var(--cdw, 300px) * .03);
+  box-shadow: inset 0 0 0 3px rgba(243, 231, 204, .55), inset 0 0 0 4px rgba(150, 110, 45, .4);
+}
+.cd-orn { display: block; flex: none; width: 44%; color: #9a7431; }
+.cd-card.dense .cd-orn { display: none; }
+.cd-card.dense .cd-frame { padding: 6% 7%; }
+.cd-orn svg { display: block; width: 100%; height: auto; }
+.cd-msg {
+  margin: 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  line-height: 1.36;
+  text-align: center;
+  text-wrap: pretty;
+  hyphens: auto;
+  color: #3a2718;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.cd-glow {
+  position: absolute;
+  inset: -24%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 214, 140, .45), rgba(255, 190, 90, .12) 60%, transparent);
+  opacity: 0;
+  transition: opacity 1s ease;
+  pointer-events: none;
+}
+.cd-card.revealed .cd-glow { opacity: 1; animation: ldglow 5s ease-in-out infinite; }
+
+/* Mise en page autour de la carte */
+.cards-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 17;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .5s, visibility 0s .5s;
+}
+.reader.cards-open .cards-ui { opacity: 1; visibility: visible; transition: opacity .8s .45s, visibility 0s; }
+.cards-ui button { pointer-events: auto; }
+.cards-layout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 16px;
+}
+.cards-head { text-align: center; }
+.cards-head h2 {
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: clamp(17px, 2.8vh, 26px);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: #f6e7bd;
+  text-shadow: 0 0 16px rgba(232, 199, 122, .5);
+}
+@media (max-width: 480px) {
+  .cards-head h2 { font-size: 17px; letter-spacing: .14em; }
+}
+.cards-slot { flex: none; width: var(--cdw, 300px); height: calc(var(--cdw, 300px) / var(--cdr, .6)); }
+.cards-controls { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.cards-again {
+  appearance: none;
+  min-width: min(300px, 82vw);
+  padding: 13px 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 199, 122, .55);
+  background: linear-gradient(180deg, #2e3272, #161942);
+  color: #f6e7bd;
+  font: 600 clamp(12px, 1.7vh, 15px) 'Cinzel', serif;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 0 22px rgba(232, 199, 122, .22), inset 0 1px 0 rgba(255, 255, 255, .12);
+  transition: box-shadow .3s, transform .15s, opacity .3s;
+}
+.cards-again:hover { box-shadow: 0 0 32px rgba(232, 199, 122, .42), inset 0 1px 0 rgba(255, 255, 255, .15); }
+.cards-again:active { transform: scale(.97); }
+.cards-again:disabled { opacity: .5; cursor: default; }
+.cards-again:focus-visible { outline: 2px solid #f6e7bd; outline-offset: 3px; }
+.cards-note {
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(232, 199, 122, .6);
+}
+.cards-back {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  left: 12px;
+  appearance: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 199, 122, .35);
+  background: rgba(14, 12, 34, .72);
+  color: #f3e6c2;
+  font: 500 16px 'Cormorant Garamond', Georgia, serif;
+  cursor: pointer;
+}
+.cards-back:hover { background: rgba(40, 34, 80, .85); }
+
+/* Téléphone en paysage : carte à gauche, texte à droite */
+.reader.compact .cards-layout {
+  display: grid;
+  grid-template-columns: auto minmax(0, 300px);
+  grid-template-areas: "slot head" "slot controls";
+  align-content: center;
+  justify-content: center;
+  column-gap: 28px;
+  row-gap: 14px;
+}
+.reader.compact .cards-slot { grid-area: slot; }
+.reader.compact .cards-head { grid-area: head; align-self: end; }
+.reader.compact .cards-controls { grid-area: controls; align-self: start; }
+.reader.compact .cards-again { min-width: 0; width: 100%; padding: 12px 18px; }
+.reader.compact .cards-back { left: auto; right: 12px; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cdk-glow, .cd-card.revealed .cd-glow { animation: none; }
+  .cd-card.anim { transition-duration: .4s; }
+  .cd-inner { transition-duration: .4s; }
+}
+
+/* Aperçu dans l'atelier : le bouton « Fermer l'aperçu » occupe le coin en haut à gauche. */
+.reader.preview .cards-back, .reader.preview .oracle-back, .reader.preview .lu-back { top: 58px; }

@@ -90,6 +90,31 @@
         </div>
       </section>
 
+      <section class="box cards-box">
+        <h2>Cartes « Messages de l’univers »</h2>
+        <label class="check"><input type="checkbox" id="cards-on"> Afficher le jeu de cartes sur le bureau</label>
+        <div id="cards-fields">
+          <label class="field">Texte affiché au survol du paquet
+            <input id="cards-label" type="text" maxlength="40" autocomplete="off">
+          </label>
+          <div class="cards-back-row">
+            <div class="card-back-preview" id="cards-back-preview"></div>
+            <div>
+              <p class="mini-title">Dos des cartes</p>
+              <div class="row wrap">
+                <button type="button" id="cards-back" class="btn small">Changer le dos…</button>
+                <button type="button" id="cards-back-rm" class="btn small ghost" hidden>Dos par défaut</button>
+              </div>
+              <p class="help">Image portrait au format 3 × 5, par exemple 1200 × 2000 px (vous pouvez la créer dans Canva).</p>
+            </div>
+          </div>
+          <label class="field">Messages — séparés par une ligne vide <span class="count" id="cards-count"></span>
+            <textarea id="cards-messages" rows="12" spellcheck="true"></textarea>
+          </label>
+          <p class="help">À chaque tirage, une carte est tirée au hasard parmi ces messages. On ne retombe sur une carte qu’après avoir vu toutes les autres.</p>
+        </div>
+      </section>
+
       <section class="box how">
         <h2>Mode d’emploi</h2>
         <ol>
