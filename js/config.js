@@ -125,7 +125,9 @@ export const DEFAULT_LENORMAND = { enabled: true, label: 'Petit Lenormand' };
 
 // Radio : lit en continu (streaming) la playlist Suno « Live Melo », sans rien télécharger.
 // Chaque morceau est identifié par son identifiant Suno (lien suno.com/song/<id>).
-export const SUNO_AUDIO = (id) => `https://d2lwuy8qc234o3.cloudfront.net/1/clip/${id}.m4a`;
+// Suno ne fournit un fichier lisible hors de son site (MP3) que pour les morceaux publics ;
+// ses flux .m4a sont chiffrés et réservés à son propre lecteur.
+export const SUNO_AUDIO = (id) => `https://cdn1.suno.ai/${id}.mp3`;
 export const DEFAULT_RADIO = {
   enabled: true,
   label: 'Radio',

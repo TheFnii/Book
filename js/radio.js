@@ -112,15 +112,24 @@ export class Radio {
     this.vol.value = this.volume;
     this.bar.querySelector('.rb-vintage').classList.toggle('on', this.vintage);
 
-    this.audio = new Audio();
-    this.audio.crossOrigin = 'anonymous';
-    this.audio.preload = 'none';
-    this.audio.addEventListener('ended', () => { if (this.on && this.audio.currentTime > 3) this.step(1); });
-    this.audio.addEventListener('error', () => { if (this.on) this.onError(); });
-    // Un morceau ne compte comme « réussi » que s'il joue vraiment quelques secondes.
-    this.audio.addEventListener('timeupdate', () => { if (this.audio.currentTime > 2) this.fails = 0; });
-    this.audio.addEventListener('play', () => this.syncPlay());
-    this.audio.addEventListener('pause', () => this.syncPlay());
+    // Deux lecteurs : l'un passe par le filtre « son d'époque » (il faut que Suno l'autorise),
+    // l'autre lit le morceau tel quel si ce n'est pas le cas.
+    this.fxAudio = new Audio();
+    this.fxAudio.crossOrigin = 'anonymous';
+    this.plainAudio = new Audio();
+    this.audio = this.fxAudio;
+    [this.fxAudio, this.plainAudio].forEach((el) => {
+      el.preload = 'none';
+      const mine = (f) => (e) => { if (e.target === this.audio) f(); };
+      el.addEventListener('ended', mine(() => { if (this.on && this.audio.currentTime > 3) this.step(1); }));
+      el.addEventListener('error', mine(() => { if (this.on && this.audio.getAttribute('src')) this.onError(); }));
+      // Un morceau ne compte comme « réussi » que s'il joue vraiment quelques secondes.
+      el.addEventListener('timeupdate', mine(() => {
+        if (this.audio.currentTime > 2) { this.fails = 0; if (this.audio === this.plainAudio) this.preferPlain = true; }
+      }));
+      el.addEventListener('play', mine(() => this.syncPlay()));
+      el.addEventListener('pause', mine(() => this.syncPlay()));
+    });
 
     this.desk.addEventListener('click', () => (this.on ? this.powerOff() : this.powerOn()));
     this.vol.addEventListener('input', () => { this.volume = Number(this.vol.value); this.applyVolume(); this.save(); });
@@ -171,7 +180,7 @@ export class Radio {
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       const ctx = new AC();
-      const src = ctx.createMediaElementSource(this.audio);
+      const src = ctx.createMediaElementSource(this.fxAudio);
       const out = ctx.createGain();
       out.connect(ctx.destination);
       // Haut-parleur d'époque : médium serré, un peu de saturation douce.
@@ -213,22 +222,29 @@ export class Radio {
   applyVolume() {
     const v = this.volume;
     if (this.ctx) {
-      this.audio.volume = 1;
+      this.fxAudio.volume = 1;
       this.out.gain.value = v;
-      this.noiseGain.gain.value = this.vintage && this.on ? 0.012 : 0;
+      this.noiseGain.gain.value = this.vintage && this.on ? 0.012 * (this.audio === this.fxAudio ? 1 : v / 0.7) : 0;
     } else {
-      this.audio.volume = v;
+      this.fxAudio.volume = v;
     }
+    this.plainAudio.volume = v;
   }
 
   load(i, play = true, source = 0) {
     const n = this.tracks.length;
     this.index = ((i % n) + n) % n;
     const t = this.tracks[this.index];
+    if (source === 0 && (this.preferPlain || !this.ctx)) source = 1;
     this.source = source;
     this.attempt = (this.attempt || 0) + 1;
-    // Deux sources possibles chez Suno : le flux .m4a, puis le .mp3.
-    this.audio.src = source === 0 ? SUNO_AUDIO(t.id) : `https://cdn1.suno.ai/${t.id}.mp3`;
+    // 0 : lecteur avec filtre d'époque ; 1 : lecture simple.
+    const next = source === 0 ? this.fxAudio : this.plainAudio;
+    const other = next === this.fxAudio ? this.plainAudio : this.fxAudio;
+    other.pause();
+    other.removeAttribute('src');
+    this.audio = next;
+    this.audio.src = SUNO_AUDIO(t.id);
     this.titleEl.textContent = `♪ ${t.title}`;
     this.save();
     if (play) this.audio.play().catch((e) => { if (e && e.name !== 'AbortError') this.onError(); });
@@ -251,7 +267,7 @@ export class Radio {
     if (this.fails >= 3) {
       this.audio.pause();
       this.audio.removeAttribute('src');
-      this.titleEl.textContent = 'La radio ne capte pas… Réessayez avec ▶';
+      this.titleEl.textContent = 'La radio ne capte pas : les morceaux doivent être publics sur Suno';
       this.stalled = true;
       this.syncPlay();
       return;
